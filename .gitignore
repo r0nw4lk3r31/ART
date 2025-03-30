@@ -1,0 +1,17 @@
+# Node.js stuff
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Vite build output
+dist/
+build/
+
+# Local env files
+.env
+.env.local
+
+# OS junk
+.DS_Store
+Thumbs.db
+
