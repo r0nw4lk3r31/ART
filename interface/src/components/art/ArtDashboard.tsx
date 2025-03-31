@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ArtConsole from './ArtConsole';
 import ModuleFrame from './ModuleFrame';
 import { LayoutMode, ModuleType, ModuleState } from '@/types/artTypes';
@@ -15,11 +14,12 @@ const ArtDashboard = () => {
   });
   const [targetFrame, setTargetFrame] = useState<string>('frame1');
   const [command, setCommand] = useState<string>('');
-  const [selectedApi, setSelectedApi] = useState<string>('openai');
-  const [consoleHeight, setConsoleHeight] = useState<number>(112); // Default console height
+  const [selectedApi, setSelectedApi] = useState<string>('Offline');
+  const [nanoGptModel, setNanoGptModel] = useState<string>('chatgpt-4o-latest');
+  const [consoleHeight, setConsoleHeight] = useState<number>(112);
   const { toast } = useToast();
+  const chatModuleRef = useRef<{ processCommand?: (cmd: string) => void }>({});
 
-  // Calculate available height for frames on component mount and window resize
   useEffect(() => {
     const updateDimensions = () => {
       const consoleDivElement = document.querySelector('.console-wrapper');
@@ -28,25 +28,17 @@ const ArtDashboard = () => {
         setConsoleHeight(height);
       }
     };
-
-    // Initial calculation
     setTimeout(updateDimensions, 100);
-    
-    // Update on resize
     window.addEventListener('resize', updateDimensions);
     return () => window.removeEventListener('resize', updateDimensions);
   }, []);
 
   const getLayoutClass = () => {
     switch (layoutMode) {
-      case 'fullscreen':
-        return 'grid-cols-1 grid-rows-1';
-      case 'split':
-        return 'grid-cols-2 grid-rows-1';
-      case 'quad':
-        return 'grid-cols-2 grid-rows-2';
-      default:
-        return 'grid-cols-2 grid-rows-1';
+      case 'fullscreen': return 'grid grid-cols-1 grid-rows-1 h-full';
+      case 'split': return 'grid grid-cols-2 grid-rows-1 h-full';
+      case 'quad': return 'grid grid-cols-2 grid-rows-2 h-full';
+      default: return 'grid grid-cols-2 grid-rows-1 h-full';
     }
   };
 
@@ -59,16 +51,11 @@ const ArtDashboard = () => {
         title: moduleType.charAt(0).toUpperCase() + moduleType.slice(1)
       }
     }));
-
-    toast({
-      title: 'Module Changed',
-      description: `${frameId} is now displaying ${moduleType}`,
-    });
+    toast({ title: 'Module Changed', description: `${frameId} is now ${moduleType}` });
   };
 
   const handleRemoveModule = (frameId: string) => {
     const defaultModule: ModuleType = 'chat';
-    
     setModules(prev => ({
       ...prev,
       [frameId]: { 
@@ -77,30 +64,23 @@ const ArtDashboard = () => {
         title: defaultModule.charAt(0).toUpperCase() + defaultModule.slice(1)
       }
     }));
-
-    toast({
-      title: 'Module Reset',
-      description: `${frameId} has been reset to the chat module`,
-    });
+    toast({ title: 'Module Reset', description: `${frameId} reset to chat` });
   };
 
   const handleCommandSubmit = (command: string) => {
-    // Process command and direct it to the targeted module
-    console.log(`Command submitted to ${targetFrame}: ${command}`);
+    console.log(`Command to ${targetFrame}: ${command}`);
+    if (modules[targetFrame].type === 'chat' && chatModuleRef.current.processCommand) {
+      chatModuleRef.current.processCommand(command);
+    }
     setCommand('');
-    
-    // In a real implementation, this would parse the command and dispatch to modules
-    toast({
-      title: 'Command Sent',
-      description: `"${command}" sent to ${modules[targetFrame].type} module`,
-    });
+    toast({ title: 'Command Sent', description: `"${command}" to ${modules[targetFrame].type}` });
   };
 
   return (
-    <div className="flex flex-col h-screen w-full bg-background text-foreground overflow-hidden">
+    <div className="flex flex-col h-screen w-screen bg-background text-foreground overflow-hidden m-0 p-0">
       <div 
-        className={`grid flex-1 gap-4 p-4 ${getLayoutClass()} transition-all duration-300 ease-in-out overflow-hidden`}
-        style={{ height: `calc(100vh - ${consoleHeight}px)` }} // Dynamic height calculation based on console height
+        className={getLayoutClass()}
+        style={{ height: `calc(100vh - ${consoleHeight}px)` }}
       >
         {layoutMode === 'fullscreen' && (
           <ModuleFrame 
@@ -110,9 +90,11 @@ const ArtDashboard = () => {
             onRemoveModule={() => handleRemoveModule('frame1')}
             isTargeted={targetFrame === 'frame1'}
             setTargetFrame={setTargetFrame}
+            ref={modules.frame1.type === 'chat' ? chatModuleRef : null}
+            selectedApi={selectedApi}
+            nanoGptModel={nanoGptModel}
           />
         )}
-        
         {layoutMode === 'split' && (
           <>
             <ModuleFrame 
@@ -122,6 +104,9 @@ const ArtDashboard = () => {
               onRemoveModule={() => handleRemoveModule('frame1')}
               isTargeted={targetFrame === 'frame1'}
               setTargetFrame={setTargetFrame}
+              ref={modules.frame1.type === 'chat' ? chatModuleRef : null}
+              selectedApi={selectedApi}
+              nanoGptModel={nanoGptModel}
             />
             <ModuleFrame 
               id="frame2" 
@@ -130,10 +115,12 @@ const ArtDashboard = () => {
               onRemoveModule={() => handleRemoveModule('frame2')}
               isTargeted={targetFrame === 'frame2'}
               setTargetFrame={setTargetFrame}
+              ref={modules.frame2.type === 'chat' ? chatModuleRef : null}
+              selectedApi={selectedApi}
+              nanoGptModel={nanoGptModel}
             />
           </>
         )}
-        
         {layoutMode === 'quad' && (
           <>
             <ModuleFrame 
@@ -143,6 +130,9 @@ const ArtDashboard = () => {
               onRemoveModule={() => handleRemoveModule('frame1')}
               isTargeted={targetFrame === 'frame1'}
               setTargetFrame={setTargetFrame}
+              ref={modules.frame1.type === 'chat' ? chatModuleRef : null}
+              selectedApi={selectedApi}
+              nanoGptModel={nanoGptModel}
             />
             <ModuleFrame 
               id="frame2" 
@@ -151,6 +141,9 @@ const ArtDashboard = () => {
               onRemoveModule={() => handleRemoveModule('frame2')}
               isTargeted={targetFrame === 'frame2'}
               setTargetFrame={setTargetFrame}
+              ref={modules.frame2.type === 'chat' ? chatModuleRef : null}
+              selectedApi={selectedApi}
+              nanoGptModel={nanoGptModel}
             />
             <ModuleFrame 
               id="frame3" 
@@ -159,6 +152,9 @@ const ArtDashboard = () => {
               onRemoveModule={() => handleRemoveModule('frame3')}
               isTargeted={targetFrame === 'frame3'}
               setTargetFrame={setTargetFrame}
+              ref={modules.frame3.type === 'chat' ? chatModuleRef : null}
+              selectedApi={selectedApi}
+              nanoGptModel={nanoGptModel}
             />
             <ModuleFrame 
               id="frame4" 
@@ -167,12 +163,14 @@ const ArtDashboard = () => {
               onRemoveModule={() => handleRemoveModule('frame4')}
               isTargeted={targetFrame === 'frame4'}
               setTargetFrame={setTargetFrame}
+              ref={modules.frame4.type === 'chat' ? chatModuleRef : null}
+              selectedApi={selectedApi}
+              nanoGptModel={nanoGptModel}
             />
           </>
         )}
       </div>
-      
-      <div className="fixed bottom-0 left-0 right-0 z-10 console-wrapper">
+      <div className="console-wrapper m-0 p-0 flex-shrink-0">
         <ArtConsole 
           layoutMode={layoutMode} 
           setLayoutMode={setLayoutMode}
@@ -184,6 +182,9 @@ const ArtDashboard = () => {
           selectedApi={selectedApi}
           setSelectedApi={setSelectedApi}
           onCommandSubmit={handleCommandSubmit}
+          nanoGptModel={nanoGptModel}
+          setNanoGptModel={setNanoGptModel}
+          setTargetFrame={setTargetFrame}
         />
       </div>
     </div>

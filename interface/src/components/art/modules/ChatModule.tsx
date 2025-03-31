@@ -1,8 +1,5 @@
-
-import React, { useState, useEffect } from 'react';
-import { MessageSquare, Send, User } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { MessageSquare } from 'lucide-react';
 import BaseModule from './BaseModule';
 
 interface Message {
@@ -15,9 +12,16 @@ interface Message {
 interface ChatModuleProps {
   frameId: string;
   isTargeted: boolean;
+  selectedApi: string;
+  nanoGptModel?: string;
 }
 
-const ChatModule = ({ frameId, isTargeted }: ChatModuleProps) => {
+const ChatModule = forwardRef<{ processCommand: (command: string) => void }, ChatModuleProps>(({
+  frameId, 
+  isTargeted,
+  selectedApi,
+  nanoGptModel = 'chatgpt-4o-latest'
+}, ref) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -28,9 +32,7 @@ const ChatModule = ({ frameId, isTargeted }: ChatModuleProps) => {
   ]);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // This function will be triggered by the ArtConsole when commands are submitted
-  // and the frame is targeted
-  const processCommand = (command: string) => {
+  const processCommand = async (command: string) => {
     if (!command.trim()) return;
 
     const newUserMessage: Message = {
@@ -43,18 +45,77 @@ const ChatModule = ({ frameId, isTargeted }: ChatModuleProps) => {
     setMessages(prev => [...prev, newUserMessage]);
     setIsProcessing(true);
 
-    // Simulate assistant response
-    setTimeout(() => {
+    try {
+      let reply = '';
+      if (selectedApi === 'NanoGPT') {
+        const apiKey = import.meta.env.VITE_NANOGPT_API_KEY;
+        const response = await fetch('https://nano-gpt.com/api/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: nanoGptModel,
+            messages: [
+              { role: 'system', content: 'You are ART, a helpful assistant.' },
+              { role: 'user', content: command }
+            ],
+            stream: false // Non-streaming for simplicity
+          }),
+        });
+
+        if (!response.ok) throw new Error(`NanoGPT error: ${response.status}`);
+        const data = await response.json();
+        reply = data.choices?.[0]?.message?.content || 'No response from NanoGPT.';
+      } else if (selectedApi === 'Grok') {
+        const apiKey = import.meta.env.VITE_XAI_API_KEY;
+        const response = await fetch('https://api.x.ai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'grok-2-latest',
+            messages: [
+              { role: 'system', content: 'You are ART, a helpful assistant.' },
+              { role: 'user', content: command }
+            ],
+          }),
+        });
+
+        if (!response.ok) throw new Error(`Grok error: ${response.status}`);
+        const data = await response.json();
+        reply = data.choices?.[0]?.message?.content || 'No response from Grok.';
+      } else { // Offline
+        reply = `Offline mode: Echoing "${command}" since I’m not connected.`;
+      }
+
       const responseMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: `I've processed your request: "${command}"`,
+        content: reply,
         sender: 'assistant',
         timestamp: new Date()
       };
       setMessages(prev => [...prev, responseMessage]);
+    } catch (error) {
+      console.error('Chat error:', error);
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: `Oops, something’s off: ${error.message}. Check keys or try later!`,
+        sender: 'assistant',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsProcessing(false);
-    }, 1000);
+    }
   };
+
+  useImperativeHandle(ref, () => ({
+    processCommand
+  }));
 
   return (
     <BaseModule
@@ -98,10 +159,6 @@ const ChatModule = ({ frameId, isTargeted }: ChatModuleProps) => {
             </div>
           )}
         </div>
-        
-        {/* The input bar at the bottom has been removed as requested */}
-        {/* The console command bar will be used instead when this frame is targeted */}
-        
         {!isTargeted && (
           <div className="py-3 text-center text-sm text-muted-foreground border border-dashed rounded-md">
             Click to target this chat frame and use the console command bar below
@@ -110,6 +167,8 @@ const ChatModule = ({ frameId, isTargeted }: ChatModuleProps) => {
       </div>
     </BaseModule>
   );
-};
+});
+
+ChatModule.displayName = 'ChatModule';
 
 export default ChatModule;

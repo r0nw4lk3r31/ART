@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
-import { Calendar, Command, Divide, Globe, Layers, LayoutGrid, MailOpen, Maximize, Menu, MessageSquare, Search, Settings, Sun, Thermometer, Watch, X } from 'lucide-react';
+import { Calendar, Command, Divide, Globe, Layers, LayoutGrid, MailOpen, Maximize, MessageSquare, Search, Settings, Sun, Watch, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { LayoutMode, ModuleState, ModuleType } from '@/types/artTypes';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 interface ArtConsoleProps {
   layoutMode: LayoutMode;
@@ -17,10 +17,13 @@ interface ArtConsoleProps {
   selectedApi: string;
   setSelectedApi: (api: string) => void;
   onCommandSubmit: (command: string) => void;
+  nanoGptModel: string;
+  setNanoGptModel: (model: string) => void;
+  setTargetFrame: (frameId: string) => void;
 }
 
-const ArtConsole = ({ 
-  layoutMode, 
+const ArtConsole = ({
+  layoutMode,
   setLayoutMode,
   targetFrame,
   modules,
@@ -29,13 +32,68 @@ const ArtConsole = ({
   setCommand,
   selectedApi,
   setSelectedApi,
-  onCommandSubmit
+  onCommandSubmit,
+  nanoGptModel,
+  setNanoGptModel,
+  setTargetFrame
 }: ArtConsoleProps) => {
   const [currentTime, setCurrentTime] = useState<string>('');
   const [currentDate, setCurrentDate] = useState<string>('');
-  const [weather, setWeather] = useState({ temp: '21°C', condition: 'Sunny' });
+  const [weather, setWeather] = useState<{ temp: string; condition: string }>({ temp: 'Loading...', condition: '' });
   const [selectedModule, setSelectedModule] = useState<ModuleType>('chat');
-  
+  const [nanoGptModels, setNanoGptModels] = useState<{ id: string; object: string; created: number; owned_by: string }[]>([]);
+  const [nanoGptBalance, setNanoGptBalance] = useState<{ balance: string; receivable: string; earned: string } | null>(null);
+
+  // Fetch NanoGPT models
+  useEffect(() => {
+    const fetchNanoGptModels = async () => {
+      const apiKey = import.meta.env.VITE_NANOGPT_API_KEY;
+      try {
+        const response = await fetch('https://nano-gpt.com/api/v1/models', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        if (!response.ok) throw new Error(`NanoGPT models fetch failed: ${response.status}`);
+        const data = await response.json();
+        setNanoGptModels(data.data || []);
+        if (data.data && data.data.length > 0 && !nanoGptModel) {
+          setNanoGptModel(data.data[0].id);
+        }
+      } catch (error) {
+        console.error('Error fetching NanoGPT models:', error);
+        setNanoGptModels([]);
+      }
+    };
+    fetchNanoGptModels();
+  }, []);
+
+  // Fetch NanoGPT balance
+  const fetchNanoGptBalance = async () => {
+    const apiKey = import.meta.env.VITE_NANOGPT_API_KEY;
+    try {
+      const response = await fetch('https://nano-gpt.com/api/check-nano-balance', {
+        method: 'POST',
+        headers: {
+          'x-api-key': apiKey,
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) throw new Error(`NanoGPT balance fetch failed: ${response.status}`);
+      const data = await response.json();
+      setNanoGptBalance({
+        balance: data.balance,
+        receivable: data.receivable,
+        earned: data.earned
+      });
+    } catch (error) {
+      console.error('Error fetching NanoGPT balance:', error);
+      setNanoGptBalance(null);
+    }
+  };
+
   // Update time and date
   useEffect(() => {
     const updateDateTime = () => {
@@ -43,23 +101,32 @@ const ArtConsole = ({
       setCurrentTime(now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }));
       setCurrentDate(now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }));
     };
-    
     updateDateTime();
     const interval = setInterval(updateDateTime, 1000);
     return () => clearInterval(interval);
   }, []);
 
-  // For demo purposes we'll just simulate weather
+  // Fetch weather
   useEffect(() => {
-    // In a real app, you would fetch weather data from an API
-    const mockWeather = [
-      { temp: '21°C', condition: 'Sunny' },
-      { temp: '18°C', condition: 'Cloudy' },
-      { temp: '15°C', condition: 'Rainy' },
-    ];
-    
-    const randomWeather = mockWeather[Math.floor(Math.random() * mockWeather.length)];
-    setWeather(randomWeather);
+    const fetchWeather = async () => {
+      const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
+      const lat = 50.8036;
+      const lon = 4.8668;
+      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        const temp = `${Math.round(data.main.temp)}°C`;
+        const condition = data.weather[0].main;
+        setWeather({ temp, condition });
+      } catch (error) {
+        console.error('Weather fetch failed:', error);
+        setWeather({ temp: 'N/A', condition: 'Error' });
+      }
+    };
+    fetchWeather();
+    const interval = setInterval(fetchWeather, 600000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleCommandSubmit = (e: React.FormEvent) => {
@@ -97,7 +164,6 @@ const ArtConsole = ({
             </span>
           )}
         </div>
-        
         <div className="flex space-x-2">
           <Button 
             variant="ghost" 
@@ -109,13 +175,74 @@ const ArtConsole = ({
             {layoutMode === 'split' && <Divide size={14} />}
             {layoutMode === 'quad' && <LayoutGrid size={14} />}
           </Button>
-          
-          <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md hover:bg-console-muted">
-            <Settings size={14} />
-          </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md hover:bg-console-muted">
+                <Settings size={14} />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-64 bg-console-muted border-console-border">
+              <div className="space-y-4 p-2">
+                <div>
+                  <label className="text-sm text-console-fg mb-1 block">API Source</label>
+                  <Select value={selectedApi} onValueChange={setSelectedApi}>
+                    <SelectTrigger className="w-full bg-console-bg border-console-border">
+                      <SelectValue placeholder="Select API" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Offline">Offline (default)</SelectItem>
+                      <SelectItem value="Grok">Grok</SelectItem>
+                      <SelectItem value="NanoGPT">NanoGPT</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {selectedApi === 'NanoGPT' && (
+                  <>
+                    <div>
+                      <label className="text-sm text-console-fg mb-1 block">NanoGPT Model</label>
+                      <Select value={nanoGptModel} onValueChange={setNanoGptModel}>
+                        <SelectTrigger className="w-full bg-console-bg border-console-border">
+                          <SelectValue placeholder="Select Model" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {nanoGptModels.length > 0 ? (
+                            nanoGptModels.map(model => (
+                              <SelectItem key={model.id} value={model.id}>
+                                {model.id}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <SelectItem value="loading">Loading models...</SelectItem>
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <label className="text-sm text-console-fg mb-1 block">NanoGPT Balance</label>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full bg-console-bg border-console-border"
+                        onClick={fetchNanoGptBalance}
+                      >
+                        <Wallet size={14} className="mr-2" />
+                        Check Balance
+                      </Button>
+                      {nanoGptBalance && (
+                        <div className="mt-2 text-xs text-console-fg">
+                          <p>Balance: {nanoGptBalance.balance} Nano</p>
+                          <p>Receivable: {nanoGptBalance.receivable} Nano</p>
+                          <p>Earned: {nanoGptBalance.earned} Nano</p>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
-      
       <div className="flex items-center space-x-4">
         <form onSubmit={handleCommandSubmit} className="flex-1">
           <div className="relative">
@@ -129,7 +256,6 @@ const ArtConsole = ({
             <Search size={14} className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-console-muted" />
           </div>
         </form>
-        
         <Select value={selectedModule} onValueChange={handleModuleChange}>
           <SelectTrigger className="w-[140px] h-9 bg-console-muted border-console-border">
             <SelectValue placeholder="Select module" />
@@ -149,20 +275,21 @@ const ArtConsole = ({
             <SelectItem value="scanner">Scanner</SelectItem>
           </SelectContent>
         </Select>
-        
-        <Select value={selectedApi} onValueChange={setSelectedApi}>
-          <SelectTrigger className="w-[140px] h-9 bg-console-muted border-console-border">
-            <SelectValue placeholder="Select API" />
+        <Select value={targetFrame} onValueChange={setTargetFrame}>
+          <SelectTrigger className="w-[100px] h-9 bg-console-muted border-console-border">
+            <SelectValue placeholder="Select frame" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="openai">OpenAI</SelectItem>
-            <SelectItem value="anthropic">Anthropic</SelectItem>
-            <SelectItem value="gemini">Gemini</SelectItem>
-            <SelectItem value="ollama">Ollama</SelectItem>
-            <SelectItem value="perplexity">Perplexity</SelectItem>
+            <SelectItem value="frame1">Frame 1</SelectItem>
+            {layoutMode !== 'fullscreen' && <SelectItem value="frame2">Frame 2</SelectItem>}
+            {layoutMode === 'quad' && (
+              <>
+                <SelectItem value="frame3">Frame 3</SelectItem>
+                <SelectItem value="frame4">Frame 4</SelectItem>
+              </>
+            )}
           </SelectContent>
         </Select>
-        
         <div className="flex items-center space-x-3 px-3 py-1.5 rounded-md bg-console-muted text-sm">
           <div className="flex items-center">
             <Watch size={14} className="mr-1.5" />
@@ -176,7 +303,7 @@ const ArtConsole = ({
           <div className="h-3 w-px bg-console-border" />
           <div className="flex items-center">
             <Sun size={14} className="mr-1.5" />
-            <span>{weather.temp}</span>
+            <span>{weather.temp} {weather.condition}</span>
           </div>
         </div>
       </div>
