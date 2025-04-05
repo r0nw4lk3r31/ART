@@ -106,7 +106,7 @@ const ArtConsole = ({
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch weather
+  // Update weather
   useEffect(() => {
     const fetchWeather = async () => {
       const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
@@ -129,10 +129,11 @@ const ArtConsole = ({
     return () => clearInterval(interval);
   }, []);
 
-  const handleCommandSubmit = (e: React.FormEvent) => {
+  const handleCommandSubmitLocal = (e: React.FormEvent) => {
     e.preventDefault();
     if (command.trim()) {
       onCommandSubmit(command);
+      setCommand(''); // Clear the command input after submission
     }
   };
 
@@ -244,7 +245,7 @@ const ArtConsole = ({
         </div>
       </div>
       <div className="flex items-center space-x-4">
-        <form onSubmit={handleCommandSubmit} className="flex-1">
+        <form onSubmit={handleCommandSubmitLocal} className="flex-1">
           <div className="relative">
             <Input
               type="text"
@@ -261,11 +262,11 @@ const ArtConsole = ({
             <SelectValue placeholder="Select module" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="chat"><MessageSquare className="mr-2 h-4 w-4" /> Chat</SelectItem>
-            <SelectItem value="email"><MailOpen className="mr-2 h-4 w-4" /> Email</SelectItem>
-            <SelectItem value="agenda"><Calendar className="mr-2 h-4 w-4" /> Agenda</SelectItem>
-            <SelectItem value="todo"><Layers className="mr-2 h-4 w-4" /> Todo</SelectItem>
-            <SelectItem value="routeplanner"><Globe className="mr-2 h-4 w-4" /> Route Planner</SelectItem>
+            <SelectItem value="chat">Chat</SelectItem>
+            <SelectItem value="email">Email</SelectItem>
+            <SelectItem value="agenda">Agenda</SelectItem>
+            <SelectItem value="todo">Todo</SelectItem>
+            <SelectItem value="routeplanner">Route Planner</SelectItem>
             <SelectItem value="trading">Trading</SelectItem>
             <SelectItem value="stats">Statistics</SelectItem>
             <SelectItem value="homeassistant">Home Assistant</SelectItem>
@@ -273,6 +274,8 @@ const ArtConsole = ({
             <SelectItem value="news">News</SelectItem>
             <SelectItem value="blockchain">Blockchain</SelectItem>
             <SelectItem value="scanner">Scanner</SelectItem>
+            <SelectItem value="coding">Coding</SelectItem>
+            <SelectItem value="executor-chat">Executor Chat</SelectItem> {/* Added executor-chat */}
           </SelectContent>
         </Select>
         <Select value={targetFrame} onValueChange={setTargetFrame}>

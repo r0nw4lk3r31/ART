@@ -1,0 +1,14 @@
+app start: browser
+
+cd C:\Users\r0nw4\ARTlab\ART\interface
+npm run dev
+npm run start
+
+app:
+
+C:\Users\r0nw4\ARTlab\ART> cd C:\Users\r0nw4\ARTlab\ART\interface
+>> npx electron .
+
+server start for executor CodingModule
+
+node server.js

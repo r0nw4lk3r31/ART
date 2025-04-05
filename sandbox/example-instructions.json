@@ -1,0 +1,19 @@
+[
+  {
+    "action": "create_file",
+    "path": "ART/sandbox/counter/index.html",
+    "content": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>React Counter</title>\n  <script src=\"https://unpkg.com/react@17/umd/react.development.js\"></script>\n  <script src=\"https://unpkg.com/react-dom@17/umd/react-dom.development.js\"></script>\n  <script src=\"https://unpkg.com/@babel/standalone/babel.min.js\"></script>\n  <link href=\"https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css\" rel=\"stylesheet\">\n</head>\n<body class=\"bg-gray-100 flex items-center justify-center h-screen\">\n  <div id=\"root\"></div>\n\n  <script type=\"text/babel\">\n    function Counter() {\n      const [count, setCount] = React.useState(0);\n\n      return (\n        <div className=\"bg-white p-6 rounded-lg shadow-lg text-center\">\n          <h1 className=\"text-2xl font-bold mb-4\">React Counter</h1>\n          <p className=\"text-4xl font-bold mb-6\">{count}</p>\n          <div className=\"flex space-x-4 justify-center\">\n            <button \n              className=\"bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded\"\n              onClick={() => setCount(count - 1)}\n            >\n              Decrease\n            </button>\n            <button \n              className=\"bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded\"\n              onClick={() => setCount(0)}\n            >\n              Reset\n            </button>\n            <button \n              className=\"bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded\"\n              onClick={() => setCount(count + 1)}\n            >\n              Increase\n            </button>\n          </div>\n        </div>\n      );\n    }\n\n    ReactDOM.render(<Counter />, document.getElementById('root'));\n  </script>\n</body>\n</html>",
+    "message": "Created React Counter component with Tailwind CSS"
+  },
+  {
+    "action": "create_file",
+    "path": "ART/sandbox/counter/README.md",
+    "content": "# React Counter\n\nA simple counter component built with React and Tailwind CSS.\n\n## Features\n\n- Increase, decrease, and reset counter\n- Responsive design with Tailwind CSS\n- Built with React\n\n## Usage\n\nOpen `index.html` in a browser to see the counter in action.\n",
+    "message": "Created README.md for the counter project"
+  },
+  {
+    "action": "test_script",
+    "path": "ART/sandbox/counter/index.html",
+    "message": "Testing the counter component"
+  }
+]

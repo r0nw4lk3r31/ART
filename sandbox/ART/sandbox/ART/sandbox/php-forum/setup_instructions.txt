@@ -1,0 +1,7 @@
+To set up the PHP Forum:
+1. Ensure you have a web server with PHP support (e.g., Apache with PHP).
+2. Place all files in the 'ART/sandbox/php-forum/' directory in your web server's document root.
+3. Create the 'data' directory and ensure it's writable by the web server.
+4. Add initial users to 'data/users.txt' in the format 'username:md5(password)'.
+5. Access the forum via your web browser at the appropriate URL.
+6. Log in with the credentials provided in 'data/users.txt'.

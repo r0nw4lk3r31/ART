@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
-import ArtConsole from './ArtConsole';
+import React, { useState, useRef, useEffect } from 'react';
 import ModuleFrame from './ModuleFrame';
-import { LayoutMode, ModuleType, ModuleState } from '@/types/artTypes';
+import ArtConsole from './ArtConsole';
 import { useToast } from '@/hooks/use-toast';
+import { LayoutMode, ModuleState, CodeSnippet, ModuleType } from '@/types/artTypes';
 
 const ArtDashboard = () => {
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('split');
@@ -14,165 +14,143 @@ const ArtDashboard = () => {
   });
   const [targetFrame, setTargetFrame] = useState<string>('frame1');
   const [command, setCommand] = useState<string>('');
-  const [selectedApi, setSelectedApi] = useState<string>('Offline');
+  // Default selectedApi to "Grok"
+  const [selectedApi, setSelectedApi] = useState<string>('Grok');
+  console.log('ArtDashboard selectedApi:', selectedApi);
   const [nanoGptModel, setNanoGptModel] = useState<string>('chatgpt-4o-latest');
-  const [consoleHeight, setConsoleHeight] = useState<number>(112);
+  const consoleHeight = 112;
+  const [codeSnippets, setCodeSnippets] = useState<CodeSnippet[]>([]);
   const { toast } = useToast();
-  const chatModuleRef = useRef<{ processCommand?: (cmd: string) => void }>({});
+  const chatRefs = useRef<Record<string, { processCommand?: (cmd: string) => void; addMessage?: (msg: string) => void }>>({});
 
   useEffect(() => {
-    const updateDimensions = () => {
-      const consoleDivElement = document.querySelector('.console-wrapper');
-      if (consoleDivElement) {
-        const height = consoleDivElement.clientHeight;
-        setConsoleHeight(height);
-      }
-    };
-    setTimeout(updateDimensions, 100);
-    window.addEventListener('resize', updateDimensions);
-    return () => window.removeEventListener('resize', updateDimensions);
-  }, []);
-
-  const getLayoutClass = () => {
-    switch (layoutMode) {
-      case 'fullscreen': return 'grid grid-cols-1 grid-rows-1 h-full';
-      case 'split': return 'grid grid-cols-2 grid-rows-1 h-full';
-      case 'quad': return 'grid grid-cols-2 grid-rows-2 h-full';
-      default: return 'grid grid-cols-2 grid-rows-1 h-full';
-    }
-  };
+    Object.keys(chatRefs.current).forEach(frameId => {
+      if (!modules[frameId]) delete chatRefs.current[frameId];
+    });
+  }, [modules]);
 
   const handleChangeModule = (frameId: string, moduleType: ModuleType) => {
     setModules(prev => ({
       ...prev,
-      [frameId]: { 
-        ...prev[frameId],
-        type: moduleType, 
-        title: moduleType.charAt(0).toUpperCase() + moduleType.slice(1)
-      }
+      [frameId]: { ...prev[frameId], type: moduleType, title: moduleType.charAt(0).toUpperCase() + moduleType.slice(1) },
     }));
-    toast({ title: 'Module Changed', description: `${frameId} is now ${moduleType}` });
   };
 
   const handleRemoveModule = (frameId: string) => {
-    const defaultModule: ModuleType = 'chat';
-    setModules(prev => ({
-      ...prev,
-      [frameId]: { 
-        ...prev[frameId],
-        type: defaultModule,
-        title: defaultModule.charAt(0).toUpperCase() + defaultModule.slice(1)
-      }
-    }));
-    toast({ title: 'Module Reset', description: `${frameId} reset to chat` });
+    setModules(prev => {
+      const newModules = { ...prev };
+      delete newModules[frameId];
+      return newModules;
+    });
   };
 
-  const handleCommandSubmit = (command: string) => {
-    console.log(`Command to ${targetFrame}: ${command}`);
-    if (modules[targetFrame].type === 'chat' && chatModuleRef.current.processCommand) {
-      chatModuleRef.current.processCommand(command);
+  const handleNewCodeSnippet = (snippet: CodeSnippet) => {
+    console.log('New snippet received:', snippet);
+    setCodeSnippets(prev => [snippet, ...prev]);
+  };
+
+  const handleCommandSubmit = (cmd: string) => {
+    if (chatRefs.current[targetFrame]?.processCommand) {
+      chatRefs.current[targetFrame].processCommand(cmd);
+    } else {
+      console.log(`No processCommand for ${targetFrame} (${modules[targetFrame]?.type})`);
     }
-    setCommand('');
-    toast({ title: 'Command Sent', description: `"${command}" to ${modules[targetFrame].type}` });
+  };
+
+  const handleSendToChat = (content: string) => {
+    const chatFrame = Object.keys(modules).find(id => modules[id].type === 'chat');
+    if (chatFrame && chatRefs.current[chatFrame]?.addMessage) {
+      chatRefs.current[chatFrame].addMessage(`Code from CodingModule:\n\`\`\`\n${content}\n\`\`\``);
+      toast({ title: 'Code Sent', description: 'Code sent to Chat module' });
+    } else {
+      toast({ title: 'Error', description: 'No Chat module available' });
+    }
+  };
+
+  const setChatRef = (frameId: string) => (instance: { processCommand?: (cmd: string) => void; addMessage?: (msg: string) => void } | null) => {
+    if (instance) chatRefs.current[frameId] = instance;
   };
 
   return (
     <div className="flex flex-col h-screen w-screen bg-background text-foreground overflow-hidden m-0 p-0">
-      <div 
-        className={getLayoutClass()}
-        style={{ height: `calc(100vh - ${consoleHeight}px)` }}
-      >
+      <div className="w-full" style={{ height: `calc(100vh - ${consoleHeight}px)` }}>
         {layoutMode === 'fullscreen' && (
-          <ModuleFrame 
-            id="frame1" 
-            moduleType={modules.frame1.type}
-            onChangeModule={(moduleType) => handleChangeModule('frame1', moduleType)}
-            onRemoveModule={() => handleRemoveModule('frame1')}
-            isTargeted={targetFrame === 'frame1'}
+          <ModuleFrame
+            id={targetFrame}
+            moduleType={modules[targetFrame].type}
+            onChangeModule={moduleType => handleChangeModule(targetFrame, moduleType)}
+            onRemoveModule={() => handleRemoveModule(targetFrame)}
+            isTargeted={true}
             setTargetFrame={setTargetFrame}
-            ref={modules.frame1.type === 'chat' ? chatModuleRef : null}
+            ref={modules[targetFrame].type === 'chat' || modules[targetFrame].type === 'executor-chat' ? setChatRef(targetFrame) : null}
             selectedApi={selectedApi}
             nanoGptModel={nanoGptModel}
+            onNewCodeSnippet={handleNewCodeSnippet}
+            codeSnippets={modules[targetFrame].type === 'coding' ? codeSnippets : undefined}
+            onSendToChat={modules[targetFrame].type === 'coding' ? handleSendToChat : undefined}
+            className="w-full h-full !max-w-none"
           />
         )}
         {layoutMode === 'split' && (
-          <>
-            <ModuleFrame 
-              id="frame1" 
+          <div className="flex flex-row w-full h-full">
+            <ModuleFrame
+              id="frame1"
               moduleType={modules.frame1.type}
-              onChangeModule={(moduleType) => handleChangeModule('frame1', moduleType)}
+              onChangeModule={moduleType => handleChangeModule('frame1', moduleType)}
               onRemoveModule={() => handleRemoveModule('frame1')}
               isTargeted={targetFrame === 'frame1'}
               setTargetFrame={setTargetFrame}
-              ref={modules.frame1.type === 'chat' ? chatModuleRef : null}
+              ref={modules.frame1.type === 'chat' || modules.frame1.type === 'executor-chat' ? setChatRef('frame1') : null}
               selectedApi={selectedApi}
               nanoGptModel={nanoGptModel}
+              onNewCodeSnippet={handleNewCodeSnippet}
+              codeSnippets={modules.frame1.type === 'coding' ? codeSnippets : undefined}
+              onSendToChat={modules.frame1.type === 'coding' ? handleSendToChat : undefined}
+              className="w-1/2 h-full !max-w-none"
             />
-            <ModuleFrame 
-              id="frame2" 
+            <ModuleFrame
+              id="frame2"
               moduleType={modules.frame2.type}
-              onChangeModule={(moduleType) => handleChangeModule('frame2', moduleType)}
+              onChangeModule={moduleType => handleChangeModule('frame2', moduleType)}
               onRemoveModule={() => handleRemoveModule('frame2')}
               isTargeted={targetFrame === 'frame2'}
               setTargetFrame={setTargetFrame}
-              ref={modules.frame2.type === 'chat' ? chatModuleRef : null}
+              ref={modules.frame2.type === 'chat' || modules.frame2.type === 'executor-chat' ? setChatRef('frame2') : null}
               selectedApi={selectedApi}
               nanoGptModel={nanoGptModel}
+              onNewCodeSnippet={handleNewCodeSnippet}
+              codeSnippets={modules.frame2.type === 'coding' ? codeSnippets : undefined}
+              onSendToChat={modules.frame2.type === 'coding' ? handleSendToChat : undefined}
+              className="w-1/2 h-full !max-w-none"
             />
-          </>
+          </div>
         )}
         {layoutMode === 'quad' && (
-          <>
-            <ModuleFrame 
-              id="frame1" 
-              moduleType={modules.frame1.type}
-              onChangeModule={(moduleType) => handleChangeModule('frame1', moduleType)}
-              onRemoveModule={() => handleRemoveModule('frame1')}
-              isTargeted={targetFrame === 'frame1'}
-              setTargetFrame={setTargetFrame}
-              ref={modules.frame1.type === 'chat' ? chatModuleRef : null}
-              selectedApi={selectedApi}
-              nanoGptModel={nanoGptModel}
-            />
-            <ModuleFrame 
-              id="frame2" 
-              moduleType={modules.frame2.type}
-              onChangeModule={(moduleType) => handleChangeModule('frame2', moduleType)}
-              onRemoveModule={() => handleRemoveModule('frame2')}
-              isTargeted={targetFrame === 'frame2'}
-              setTargetFrame={setTargetFrame}
-              ref={modules.frame2.type === 'chat' ? chatModuleRef : null}
-              selectedApi={selectedApi}
-              nanoGptModel={nanoGptModel}
-            />
-            <ModuleFrame 
-              id="frame3" 
-              moduleType={modules.frame3.type}
-              onChangeModule={(moduleType) => handleChangeModule('frame3', moduleType)}
-              onRemoveModule={() => handleRemoveModule('frame3')}
-              isTargeted={targetFrame === 'frame3'}
-              setTargetFrame={setTargetFrame}
-              ref={modules.frame3.type === 'chat' ? chatModuleRef : null}
-              selectedApi={selectedApi}
-              nanoGptModel={nanoGptModel}
-            />
-            <ModuleFrame 
-              id="frame4" 
-              moduleType={modules.frame4.type}
-              onChangeModule={(moduleType) => handleChangeModule('frame4', moduleType)}
-              onRemoveModule={() => handleRemoveModule('frame4')}
-              isTargeted={targetFrame === 'frame4'}
-              setTargetFrame={setTargetFrame}
-              ref={modules.frame4.type === 'chat' ? chatModuleRef : null}
-              selectedApi={selectedApi}
-              nanoGptModel={nanoGptModel}
-            />
-          </>
+          <div className="grid grid-cols-2 grid-rows-2 w-full h-full gap-0">
+            {['frame1', 'frame2', 'frame3', 'frame4'].map(frameId => (
+              <ModuleFrame
+                key={frameId}
+                id={frameId}
+                moduleType={modules[frameId as keyof ModuleState].type}
+                onChangeModule={moduleType => handleChangeModule(frameId, moduleType)}
+                onRemoveModule={() => handleRemoveModule(frameId)}
+                isTargeted={targetFrame === frameId}
+                setTargetFrame={setTargetFrame}
+                ref={modules[frameId as keyof ModuleState].type === 'chat' || modules[frameId as keyof ModuleState].type === 'executor-chat' ? setChatRef(frameId) : null}
+                selectedApi={selectedApi}
+                nanoGptModel={nanoGptModel}
+                onNewCodeSnippet={handleNewCodeSnippet}
+                codeSnippets={modules[frameId as keyof ModuleState].type === 'coding' ? codeSnippets : undefined}
+                onSendToChat={modules[frameId as keyof ModuleState].type === 'coding' ? handleSendToChat : undefined}
+                className="w-full h-full !max-w-none"
+              />
+            ))}
+          </div>
         )}
       </div>
-      <div className="console-wrapper m-0 p-0 flex-shrink-0">
-        <ArtConsole 
-          layoutMode={layoutMode} 
+      <div className="console-wrapper m-0 p-0 flex-shrink-0" style={{ height: consoleHeight }}>
+        <ArtConsole
+          layoutMode={layoutMode}
           setLayoutMode={setLayoutMode}
           targetFrame={targetFrame}
           modules={modules}

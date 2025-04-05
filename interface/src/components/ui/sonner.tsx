@@ -26,4 +26,5 @@ const Toaster = ({ ...props }: ToasterProps) => {
   )
 }
 
-export { Toaster }
+// Export Toaster as default so that index.ts can use it as "Sonner"
+export default Toaster

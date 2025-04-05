@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -12,9 +11,9 @@ interface BaseModuleProps {
 
 const BaseModule = ({ frameId, isTargeted, title, icon, children }: BaseModuleProps) => {
   return (
-    <div className="p-4 h-full flex flex-col">
-      <Card className="flex-1 flex flex-col overflow-hidden border-none bg-transparent">
-        <CardHeader className="px-0 pt-0 pb-2">
+    <div className="h-full w-full flex flex-col p-0"> {/* Remove padding, add w-full */}
+      <Card className="flex-1 flex flex-col overflow-hidden border-none bg-transparent w-full !max-w-none">
+        <CardHeader className="px-4 pt-2 pb-2"> {/* Move padding here */}
           <CardTitle className="text-md font-medium flex items-center gap-2">
             {icon}
             {title}
@@ -25,7 +24,7 @@ const BaseModule = ({ frameId, isTargeted, title, icon, children }: BaseModulePr
             )}
           </CardTitle>
         </CardHeader>
-        <CardContent className="px-0 pb-0 flex-1 overflow-auto">
+        <CardContent className="px-4 pb-4 flex-1 overflow-auto"> {/* Move padding here */}
           {children}
         </CardContent>
       </Card>

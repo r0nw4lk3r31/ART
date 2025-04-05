@@ -24,11 +24,9 @@ const ChartContext = React.createContext<ChartContextProps | null>(null)
 
 function useChart() {
   const context = React.useContext(ChartContext)
-
   if (!context) {
     throw new Error("useChart must be used within a <ChartContainer />")
   }
-
   return context
 }
 
@@ -286,7 +284,6 @@ const ChartLegendContent = React.forwardRef<
         {payload.map((item) => {
           const key = `${nameKey || item.dataKey || "value"}`
           const itemConfig = getPayloadConfigFromPayload(config, item, key)
-
           return (
             <div
               key={item.value}
@@ -354,10 +351,12 @@ function getPayloadConfigFromPayload(
 }
 
 export {
-  ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
   ChartStyle,
 }
+
+// Export ChartContainer as the default export so that index.ts can successfully re-export it as "Chart"
+export default ChartContainer;

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frame Communication Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    
+    .frame {
+      border: 2px solid #333;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      background-color: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .frame-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .frame-title {
+      font-size: 18px;
+      font-weight: bold;
+    }
+    
+    .frame-id {
+      background-color: #333;
+      color: white;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    
+    .message-area {
+      height: 200px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #f9f9f9;
+    }
+    
+    .message {
+      margin-bottom: 8px;
+      padding: 8px;
+      border-radius: 4px;
+    }
+    
+    .sent {
+      background-color: #e3f2fd;
+      margin-left: 20px;
+      border-left: 3px solid #2196f3;
+    }
+    
+    .received {
+      background-color: #f1f8e9;
+      margin-right: 20px;
+      border-left: 3px solid #8bc34a;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 10px;
+    }
+    
+    select, input, button {
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    input {
+      flex-grow: 1;
+    }
+    
+    button {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    
+    button:hover {
+      background-color: #45a049;
+    }
+    
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px 15px;
+      border-radius: 4px;
+      color: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .success {
+      background-color: #4caf50;
+    }
+    
+    .error {
+      background-color: #f44336;
+    }
+    
+    .info {
+      background-color: #2196f3;
+    }
+  </style>
+</head>
+<body>
+  <h1>Frame Communication Test</h1>
+  <p>This page simulates the frame-to-frame communication in the ART interface.</p>
+  
+  <div class="frame" id="frame1">
+    <div class="frame-header">
+      <div class="frame-title">Frame 1</div>
+      <div class="frame-id" data-frame-id="frame1">frame1</div>
+    </div>
+    <div class="message-area" id="messages-frame1"></div>
+    <div class="controls">
+      <select id="target-frame1">
+        <option value="frame2">Frame 2</option>
+        <option value="frame3">Frame 3</option>
+        <option value="frame4">Frame 4</option>
+      </select>
+      <input type="text" id="message-frame1" placeholder="Type a message...">
+      <button onclick="sendMessage('frame1')">Send</button>
+    </div>
+  </div>
+  
+  <div class="frame" id="frame2">
+    <div class="frame-header">
+      <div class="frame-title">Frame 2</div>
+      <div class="frame-id" data-frame-id="frame2">frame2</div>
+    </div>
+    <div class="message-area" id="messages-frame2"></div>
+    <div class="controls">
+      <select id="target-frame2">
+        <option value="frame1">Frame 1</option>
+        <option value="frame3">Frame 3</option>
+        <option value="frame4">Frame 4</option>
+      </select>
+      <input type="text" id="message-frame2" placeholder="Type a message...">
+      <button onclick="sendMessage('frame2')">Send</button>
+    </div>
+  </div>
+  
+  <div class="frame" id="frame3">
+    <div class="frame-header">
+      <div class="frame-title">Frame 3 (Executor)</div>
+      <div class="frame-id" data-frame-id="frame3">frame3</div>
+    </div>
+    <div class="message-area" id="messages-frame3"></div>
+    <div class="controls">
+      <select id="target-frame3">
+        <option value="frame1">Frame 1</option>
+        <option value="frame2">Frame 2</option>
+        <option value="frame4">Frame 4</option>
+      </select>
+      <input type="text" id="message-frame3" placeholder="Type a message...">
+      <button onclick="sendMessage('frame3')">Send</button>
+    </div>
+  </div>
+  
+  <div class="frame" id="frame4">
+    <div class="frame-header">
+      <div class="frame-title">Frame 4 (Conductor)</div>
+      <div class="frame-id" data-frame-id="frame4">frame4</div>
+    </div>
+    <div class="message-area" id="messages-frame4"></div>
+    <div class="controls">
+      <select id="target-frame4">
+        <option value="frame1">Frame 1</option>
+        <option value="frame2">Frame 2</option>
+        <option value="frame3">Frame 3</option>
+      </select>
+      <input type="text" id="message-frame4" placeholder="Type a message...">
+      <button onclick="sendMessage('frame4')">Send</button>
+    </div>
+  </div>
+  
+  <script>
+    // Mock the electron IPC renderer
+    window.electron = {
+      ipcRenderer: {
+        on: function(channel, callback) {
+          // Store the callback for this channel
+          if (!this._listeners) this._listeners = {};
+          this._listeners[channel] = callback;
+          console.log(`Listener added for channel: ${channel}`);
+        },
+        send: function(channel, data) {
+          console.log(`Sending on channel ${channel}:`, data);
+          
+          if (channel === 'frame-message') {
+            // Simulate the main process forwarding the message
+            const targetChannel = `frame-${data.target}`;
+            
+            // Call the listener for the target channel
+            setTimeout(() => {
+              if (this._listeners && this._listeners[targetChannel]) {
+                console.log(`Forwarding to ${targetChannel}:`, data);
+                this._listeners[targetChannel](data);
+              } else {
+                console.error(`No listener for ${targetChannel}`);
+              }
+            }, 100);
+          }
+        },
+        removeAllListeners: function(channel) {
+          if (this._listeners) {
+            delete this._listeners[channel];
+            console.log(`Removed listeners for channel: ${channel}`);
+          }
+        }
+      }
+    };
+    
+    // Set up listeners for each frame
+    function setupListeners() {
+      ['frame1', 'frame2', 'frame3', 'frame4'].forEach(frameId => {
+        window.electron.ipcRenderer.on(`frame-${frameId}`, (msg) => {
+          console.log(`Received message in ${frameId}:`, msg);
+          
+          // Add the message to the frame's message area
+          const messageArea = document.getElementById(`messages-${frameId}`);
+          const messageEl = document.createElement('div');
+          messageEl.className = 'message received';
+          messageEl.textContent = `From ${msg.sender}: ${msg.message}`;
+          messageArea.appendChild(messageEl);
+          messageArea.scrollTop = messageArea.scrollHeight;
+          
+          // Show a notification
+          showNotification(`Message received in ${frameId}`, 'success');
+        });
+      });
+    }
+    
+    // Send a message from one frame to another
+    function sendMessage(sourceFrame) {
+      const targetSelect = document.getElementById(`target-${sourceFrame}`);
+      const messageInput = document.getElementById(`message-${sourceFrame}`);
+      
+      const targetFrame = targetSelect.value;
+      const message = messageInput.value.trim();
+      
+      if (!message) {
+        showNotification('Please enter a message', 'error');
+        return;
+      }
+      
+      // Send the message
+      window.electron.ipcRenderer.send('frame-message', {
+        target: targetFrame,
+        sender: sourceFrame,
+        message: message
+      });
+      
+      // Add the message to the source frame's message area
+      const messageArea = document.getElementById(`messages-${sourceFrame}`);
+      const messageEl = document.createElement('div');
+      messageEl.className = 'message sent';
+      messageEl.textContent = `To ${targetFrame}: ${message}`;
+      messageArea.appendChild(messageEl);
+      messageArea.scrollTop = messageArea.scrollHeight;
+      
+      // Clear the input
+      messageInput.value = '';
+      
+      // Show a notification
+      showNotification(`Message sent from ${sourceFrame} to ${targetFrame}`, 'info');
+    }
+    
+    // Show a notification
+    function showNotification(message, type) {
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      // Fade in
+      setTimeout(() => {
+        notification.style.opacity = '1';
+      }, 10);
+      
+      // Fade out and remove
+      setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => {
+          notification.remove();
+        }, 300);
+      }, 3000);
+    }
+    
+    // Initialize
+    setupListeners();
+    console.log('Frame communication test initialized');
+  </script>
+  
+  <!-- Load the simple frame test script -->
+  <script>
+    // Wait for the page to load, then load the test script
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const script = document.createElement('script');
+        script.src = '/sandbox/simple-frame-test.js';
+        document.head.appendChild(script);
+        
+        console.log('Simple frame test script loaded');
+      }, 1000);
+    });
+  </script>
+</body>
+</html>

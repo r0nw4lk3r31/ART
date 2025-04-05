@@ -1,8 +1,10 @@
+// src/types/artTypes.ts
 
 export type LayoutMode = 'fullscreen' | 'split' | 'quad';
 
 export type ModuleType = 
   | 'chat'
+  | 'coding' // Added to support CodingModule
   | 'email'
   | 'agenda'
   | 'todo'
@@ -13,7 +15,8 @@ export type ModuleType =
   | 'browser'
   | 'news'
   | 'blockchain'
-  | 'scanner';
+  | 'scanner'
+  | 'executor-chat'; // Added to support ExecutorChatModule
 
 export interface Module {
   id: string;
@@ -29,4 +32,13 @@ export interface ModuleState {
 export interface CommandTarget {
   targetFrame: string | null;
   command: string;
+}
+
+// Added CodeSnippet interface to support code sharing between ChatModule and CodingModule
+export interface CodeSnippet {
+  id: string; // Matches usage in CodingModule and ChatModule
+  content: string;
+  language: string;
+  title: string;
+  timestamp: Date;
 }
