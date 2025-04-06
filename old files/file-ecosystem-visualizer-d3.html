@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ART Ecosystem Visualizer (D3)</title>
+  <!-- D3.js for visualization -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    :root {
+      --bg-primary: #0f0f1a;
+      --bg-secondary: #1a1a2e;
+      --text-primary: #e0e0ff;
+      --text-secondary: #a0a0c0;
+      --accent-primary: #7b2cbf;
+      --accent-secondary: #5a189a;
+      --accent-tertiary: #3c096c;
+      --highlight: #ff9e00;
+      --node-js: #f7df1e;
+      --node-html: #e34c26;
+      --node-css: #264de4;
+      --node-tsx: #3178c6;
+      --node-json: #5b5b5b;
+      --node-md: #083fa1;
+      --glow: 0 0 10px rgba(123, 44, 191, 0.5), 0 0 20px rgba(123, 44, 191, 0.3);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: var(--bg-secondary);
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--accent-tertiary);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      text-shadow: 0 0 5px var(--accent-primary);
+    }
+
+    .controls {
+      display: flex;
+      gap: 1rem;
+    }
+
+    button {
+      background-color: var(--accent-tertiary);
+      color: var(--text-primary);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 500;
+      box-shadow: var(--glow);
+    }
+
+    button:hover {
+      background-color: var(--accent-secondary);
+      transform: translateY(-2px);
+    }
+
+    select {
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--accent-tertiary);
+      padding: 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .control-checkbox {
+      display: flex;
+      align-items: center;
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--accent-tertiary);
+      border-radius: 4px;
+      padding: 0.5rem;
+      cursor: pointer;
+      user-select: none;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+    }
+    
+    .control-checkbox input {
+      margin-right: 0.5rem;
+      accent-color: var(--accent-primary);
+    }
+
+    .visualization-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .node {
+      cursor: pointer;
+    }
+
+    .link {
+      stroke: var(--accent-tertiary);
+      stroke-opacity: 0.4;
+    }
+    
+    .node {
+      cursor: pointer;
+      stroke: var(--bg-primary);
+      stroke-width: 1.5px;
+    }
+    
+    .node.highlighted {
+      stroke: var(--highlight);
+      stroke-width: 2px;
+    }
+    
+    .link.highlighted {
+      stroke: var(--highlight);
+      stroke-opacity: 1;
+      stroke-width: 2px;
+    }
+
+    .info-panel {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background-color: rgba(26, 26, 46, 0.8);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--accent-tertiary);
+      border-radius: 8px;
+      padding: 1rem;
+      width: 300px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: var(--glow);
+      transform: translateX(350px);
+      transition: transform 0.3s ease;
+    }
+
+    .info-panel.visible {
+      transform: translateX(0);
+    }
+
+    .info-panel h2 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      color: var(--highlight);
+      border-bottom: 1px solid var(--accent-tertiary);
+      padding-bottom: 0.5rem;
+    }
+
+    .info-panel .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .info-panel .info-label {
+      color: var(--text-secondary);
+    }
+
+    .info-panel .info-value {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .info-panel .connections {
+      margin-top: 1rem;
+    }
+
+    .info-panel .connections h3 {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-secondary);
+    }
+
+    .info-panel .connection-item {
+      padding: 0.3rem 0.5rem;
+      background-color: var(--bg-secondary);
+      border-radius: 4px;
+      margin-bottom: 0.3rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .info-panel .connection-item:hover {
+      background-color: var(--accent-tertiary);
+    }
+
+    .legend {
+      position: absolute;
+      bottom: 1rem;
+      left: 1rem;
+      background-color: rgba(26, 26, 46, 0.8);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--accent-tertiary);
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: var(--glow);
+    }
+
+    .legend h3 {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-secondary);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.3rem;
+    }
+
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 0.5rem;
+    }
+
+    .legend-label {
+      font-size: 0.8rem;
+      color: var(--text-primary);
+    }
+
+    /* Cyberpunk grid background */
+    .grid-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(123, 44, 191, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(123, 44, 191, 0.1) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: -1;
+    }
+
+    /* Loading indicator */
+    .loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      z-index: 1000;
+      background-color: rgba(15, 15, 26, 0.8);
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: var(--glow);
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid var(--accent-tertiary);
+      border-top-color: var(--highlight);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ART Ecosystem Visualizer (D3)</h1>
+    <div class="controls">
+      <select id="colorBy">
+        <option value="fileType">Color by File Type</option>
+        <option value="size">Color by File Size</option>
+        <option value="modified">Color by Last Modified</option>
+      </select>
+      <label class="control-checkbox">
+        <input type="checkbox" id="hideUnconnected" checked>
+        <span>Hide Unconnected</span>
+      </label>
+      <button id="refreshBtn">Refresh Data</button>
+    </div>
+  </header>
+
+  <div class="visualization-container">
+    <div class="grid-background"></div>
+    <svg id="graph"></svg>
+    
+    <div class="info-panel" id="infoPanel">
+      <h2 id="fileName">File Information</h2>
+      <div class="info-row">
+        <span class="info-label">Path:</span>
+        <span class="info-value" id="filePath">-</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Type:</span>
+        <span class="info-value" id="fileType">-</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Size:</span>
+        <span class="info-value" id="fileSize">-</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Last Modified:</span>
+        <span class="info-value" id="fileModified">-</span>
+      </div>
+      <div class="connections">
+        <h3>Connections</h3>
+        <div id="connectionsList"></div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <h3>File Types</h3>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: var(--node-js);"></div>
+        <span class="legend-label">JavaScript (.js)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: var(--node-html);"></div>
+        <span class="legend-label">HTML (.html)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: var(--node-css);"></div>
+        <span class="legend-label">CSS (.css)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: var(--node-tsx);"></div>
+        <span class="legend-label">TypeScript (.ts, .tsx)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: var(--node-json);"></div>
+        <span class="legend-label">JSON (.json)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: var(--node-md);"></div>
+        <span class="legend-label">Markdown (.md)</span>
+      </div>
+    </div>
+
+    <div class="loading" id="loading">
+      <div class="loading-spinner"></div>
+      <div id="loadingText">Loading file ecosystem data...</div>
+    </div>
+  </div>
+
+  <script>
+    // Sample data structure
+    let graphData = {
+      nodes: [],
+      links: []
+    };
+
+    // File type to color mapping
+    const fileTypeColors = {
+      'js': 'var(--node-js)',
+      'jsx': 'var(--node-js)',
+      'html': 'var(--node-html)',
+      'css': 'var(--node-css)',
+      'ts': 'var(--node-tsx)',
+      'tsx': 'var(--node-tsx)',
+      'json': 'var(--node-json)',
+      'md': 'var(--node-md)',
+      'default': 'var(--accent-primary)'
+    };
+
+    // Function to format file size
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // Function to format date
+    function formatDate(timestamp) {
+      const date = new Date(timestamp);
+      return date.toLocaleString();
+    }
+
+    // Function to get file extension
+    function getFileExtension(filename) {
+      return filename.split('.').pop().toLowerCase();
+    }
+
+    // Function to get node color based on file type
+    function getNodeColor(node, colorBy) {
+      if (colorBy === 'fileType') {
+        const ext = getFileExtension(node.name);
+        return fileTypeColors[ext] || fileTypeColors.default;
+      } else if (colorBy === 'size') {
+        // Color by file size (gradient from blue to red)
+        const maxSize = Math.max(...graphData.nodes.map(n => n.size || 0));
+        const minSize = Math.min(...graphData.nodes.map(n => n.size || 0));
+        const normalizedSize = (node.size - minSize) / (maxSize - minSize || 1);
+        return d3.interpolateViridis(normalizedSize);
+      } else if (colorBy === 'modified') {
+        // Color by last modified (gradient from blue to red)
+        const maxTime = Math.max(...graphData.nodes.map(n => n.lastModified || 0));
+        const minTime = Math.min(...graphData.nodes.map(n => n.lastModified || 0));
+        const normalizedTime = (node.lastModified - minTime) / (maxTime - minTime || 1);
+        return d3.interpolatePlasma(normalizedTime);
+      }
+      return fileTypeColors.default;
+    }
+
+    // Function to show file info
+    function showFileInfo(node) {
+      const infoPanel = document.getElementById('infoPanel');
+      document.getElementById('fileName').textContent = node.name;
+      document.getElementById('filePath').textContent = node.path;
+      document.getElementById('fileType').textContent = getFileExtension(node.name).toUpperCase();
+      document.getElementById('fileSize').textContent = formatFileSize(node.size || 0);
+      document.getElementById('fileModified').textContent = formatDate(node.lastModified || 0);
+      
+      // Show connections
+      const connectionsList = document.getElementById('connectionsList');
+      connectionsList.innerHTML = '';
+      
+      // Find all links connected to this node
+      const connections = graphData.links.filter(link => 
+        link.source.id === node.id || link.target.id === node.id
+      );
+      
+      if (connections.length === 0) {
+        connectionsList.innerHTML = '<div class="connection-item">No connections found</div>';
+      } else {
+        connections.forEach(link => {
+          const connectedNode = link.source.id === node.id ? link.target : link.source;
+          const connectionItem = document.createElement('div');
+          connectionItem.classList.add('connection-item');
+          connectionItem.textContent = connectedNode.name;
+          connectionItem.addEventListener('click', () => {
+            // Highlight the connected node
+            highlightNode(connectedNode);
+            showFileInfo(connectedNode);
+          });
+          connectionsList.appendChild(connectionItem);
+        });
+      }
+      
+      infoPanel.classList.add('visible');
+    }
+
+    // Function to hide file info
+    function hideFileInfo() {
+      const infoPanel = document.getElementById('infoPanel');
+      infoPanel.classList.remove('visible');
+    }
+
+    // Function to highlight a node
+    function highlightNode(node) {
+      // Remove previous highlights
+      d3.selectAll('.node').classed('highlighted', false);
+      d3.selectAll('.link').classed('highlighted', false);
+      
+      // Highlight the node
+      d3.select(`#node-${node.id}`).classed('highlighted', true);
+      
+      // Highlight connected links
+      graphData.links.forEach((link, i) => {
+        if (link.source.id === node.id || link.target.id === node.id) {
+          d3.select(`#link-${i}`).classed('highlighted', true);
+        }
+      });
+    }
+
+    // Function to initialize the graph
+    function initGraph() {
+      const colorBy = document.getElementById('colorBy').value;
+      const hideUnconnected = document.getElementById('hideUnconnected').checked;
+      
+      // Process data based on options
+      let processedData = { ...graphData };
+      
+      // Filter out unconnected nodes if option is checked
+      if (hideUnconnected) {
+        // Find connected node IDs
+        const connectedNodeIds = new Set();
+        graphData.links.forEach(link => {
+          const sourceId = typeof link.source === 'object' ? link.source.id : link.source;
+          const targetId = typeof link.target === 'object' ? link.target.id : link.target;
+          connectedNodeIds.add(sourceId);
+          connectedNodeIds.add(targetId);
+        });
+        
+        // Filter nodes to only include connected ones
+        processedData.nodes = graphData.nodes.filter(node => connectedNodeIds.has(node.id));
+        console.log(`Filtered out ${graphData.nodes.length - processedData.nodes.length} unconnected nodes`);
+      }
+      
+      // Clear the SVG
+      const svg = d3.select('#graph');
+      svg.selectAll('*').remove();
+      
+      // Get the dimensions of the SVG
+      const width = svg.node().clientWidth;
+      const height = svg.node().clientHeight;
+      
+      // Create a force simulation optimized for large graphs
+      const simulation = d3.forceSimulation(processedData.nodes)
+        .force('link', d3.forceLink(processedData.links).id(d => d.id).distance(30)) // Shorter distance
+        .force('charge', d3.forceManyBody().strength(-80).distanceMax(200)) // Weaker repulsion with distance limit
+        .force('center', d3.forceCenter(width / 2, height / 2))
+        .force('collision', d3.forceCollide().radius(10)) // Smaller collision radius
+        .force('x', d3.forceX(width / 2).strength(0.08)) // Stronger x-centering force
+        .force('y', d3.forceY(height / 2).strength(0.08)) // Stronger y-centering force
+        .alphaDecay(0.01); // Slower cooling for better layout with many nodes
+      
+      // Create the links
+      const link = svg.append('g')
+        .selectAll('line')
+        .data(processedData.links)
+        .enter()
+        .append('line')
+        .attr('class', 'link')
+        .attr('id', (d, i) => `link-${i}`)
+        .attr('stroke-width', d => d.weight || 1);
+      
+      // Create the nodes
+      const node = svg.append('g')
+        .selectAll('circle')
+        .data(processedData.nodes)
+        .enter()
+        .append('circle')
+        .attr('class', 'node')
+        .attr('id', d => `node-${d.id}`)
+        .attr('r', d => {
+          // Base size on number of connections (min 3, max 8)
+          const connections = processedData.links.filter(link => 
+            link.source.id === d.id || link.target.id === d.id
+          ).length;
+          return Math.max(3, Math.min(8, 3 + connections / 3));
+        })
+        .attr('fill', d => getNodeColor(d, colorBy))
+        .call(d3.drag()
+          .on('start', dragstarted)
+          .on('drag', dragged)
+          .on('end', dragended));
+      
+      // Add node labels
+      const label = svg.append('g')
+        .selectAll('text')
+        .data(processedData.nodes)
+        .enter()
+        .append('text')
+        .attr('class', 'node-label')
+        .attr('font-size', '8px')
+        .attr('fill', 'var(--text-primary)')
+        .text(d => d.name);
+      
+      // Add tooltips
+      node.append('title')
+        .text(d => d.name);
+      
+      // Add click event to nodes
+      node.on('click', (event, d) => {
+        event.stopPropagation();
+        highlightNode(d);
+        showFileInfo(d);
+      });
+      
+      // Add click event to SVG background
+      svg.on('click', () => {
+        hideFileInfo();
+      });
+      
+      // Update positions on each tick
+      simulation.on('tick', () => {
+        link
+          .attr('x1', d => d.source.x)
+          .attr('y1', d => d.source.y)
+          .attr('x2', d => d.target.x)
+          .attr('y2', d => d.target.y);
+        
+        node
+          .attr('cx', d => d.x)
+          .attr('cy', d => d.y);
+        
+        label
+          .attr('x', d => d.x + 10)
+          .attr('y', d => d.y + 3);
+      });
+      
+      // Drag functions
+      function dragstarted(event, d) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+      }
+      
+      function dragged(event, d) {
+        d.fx = event.x;
+        d.fy = event.y;
+      }
+      
+      function dragended(event, d) {
+        if (!event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+      }
+      
+      // Add zoom behavior
+      const zoom = d3.zoom()
+        .scaleExtent([0.1, 10])
+        .on('zoom', (event) => {
+          svg.selectAll('g').attr('transform', event.transform);
+        });
+      
+      svg.call(zoom);
+    }
+
+    // Function to fetch file data
+    async function fetchFileData() {
+      document.getElementById('loading').style.display = 'flex';
+      const loadingText = document.getElementById('loadingText');
+      
+      try {
+        // Try multiple paths
+        const paths = [
+          'file-ecosystem-data.json',
+          './file-ecosystem-data.json',
+          '../file-ecosystem-data.json',
+          '../../file-ecosystem-data.json'
+        ];
+        
+        let loaded = false;
+        
+        for (const path of paths) {
+          try {
+            loadingText.textContent = `Trying to load from: ${path}`;
+            console.log(`Attempting to load from: ${path}`);
+            
+            const response = await fetch(path);
+            if (response.ok) {
+              const text = await response.text();
+              console.log(`Successfully loaded data from ${path}, size: ${text.length} bytes`);
+              loadingText.textContent = 'Parsing data...';
+              
+              // Use a small delay to allow the UI to update
+              await new Promise(resolve => setTimeout(resolve, 10));
+              
+              graphData = JSON.parse(text);
+              console.log(`Successfully parsed data: ${graphData.nodes.length} nodes, ${graphData.links.length} links`);
+              loaded = true;
+              break;
+            } else {
+              console.warn(`Failed to load from ${path}: ${response.status} ${response.statusText}`);
+            }
+          } catch (pathError) {
+            console.warn(`Error loading from ${path}:`, pathError);
+          }
+        }
+        
+        if (!loaded) {
+          // Use sample data if no data could be loaded
+          loadingText.textContent = 'Using sample data...';
+          console.log('Using sample data');
+          
+          graphData = {
+            nodes: [
+              { id: 1, name: 'server.js', path: '/server.js', size: 4096, lastModified: Date.now() - 86400000 * 2 },
+              { id: 2, name: 'package.json', path: '/package.json', size: 2048, lastModified: Date.now() - 86400000 * 5 },
+              { id: 3, name: 'ChatModule.tsx', path: '/interface/src/components/art/modules/ChatModule.tsx', size: 15360, lastModified: Date.now() - 3600000 },
+              { id: 4, name: 'ExecutorChatModule.tsx', path: '/interface/src/components/art/modules/ExecutorChatModule.tsx', size: 12288, lastModified: Date.now() - 3600000 * 2 },
+              { id: 5, name: 'AutoConversation.tsx', path: '/interface/src/components/art/modules/AutoConversation.tsx', size: 8192, lastModified: Date.now() - 86400000 },
+              { id: 6, name: 'TodoModule.tsx', path: '/interface/src/components/art/modules/TodoModule.tsx', size: 20480, lastModified: Date.now() },
+              { id: 7, name: 'AgendaModule.tsx', path: '/interface/src/components/art/modules/AgendaModule.tsx', size: 18432, lastModified: Date.now() },
+              { id: 8, name: 'BaseModule.tsx', path: '/interface/src/components/art/modules/BaseModule.tsx', size: 3072, lastModified: Date.now() - 86400000 * 10 }
+            ],
+            links: [
+              { source: 1, target: 2, weight: 2 },
+              { source: 3, target: 5, weight: 3 },
+              { source: 4, target: 5, weight: 3 },
+              { source: 3, target: 8, weight: 1 },
+              { source: 4, target: 8, weight: 1 },
+              { source: 6, target: 8, weight: 1 },
+              { source: 7, target: 8, weight: 1 }
+            ]
+          };
+        }
+        
+        // Calculate connection counts for all nodes (for node sizing)
+        const nodeConnections = {};
+        graphData.links.forEach(link => {
+          const sourceId = typeof link.source === 'object' ? link.source.id : link.source;
+          const targetId = typeof link.target === 'object' ? link.target.id : link.target;
+          nodeConnections[sourceId] = (nodeConnections[sourceId] || 0) + 1;
+          nodeConnections[targetId] = (nodeConnections[targetId] || 0) + 1;
+        });
+        
+        // Add connection count to nodes
+        graphData.nodes.forEach(node => {
+          node.connections = nodeConnections[node.id] || 0;
+        });
+        
+        console.log(`Using all ${graphData.nodes.length} nodes and ${graphData.links.length} links`);
+        
+        // Initialize the graph with the data
+        loadingText.textContent = "Initializing visualization...";
+        await new Promise(resolve => setTimeout(resolve, 10)); // Allow UI update
+        initGraph();
+        
+        // Add a note if using sample data
+        if (!loaded) {
+          const note = document.createElement('div');
+          note.style.position = 'absolute';
+          note.style.bottom = '1rem';
+          note.style.right = '1rem';
+          note.style.backgroundColor = 'rgba(26, 26, 46, 0.8)';
+          note.style.backdropFilter = 'blur(10px)';
+          note.style.border = '1px solid var(--accent-tertiary)';
+          note.style.borderRadius = '8px';
+          note.style.padding = '0.5rem 1rem';
+          note.style.color = 'var(--text-primary)';
+          note.style.fontSize = '0.8rem';
+          note.style.boxShadow = 'var(--glow)';
+          note.innerHTML = `
+            <strong>Using sample data</strong><br>
+            Run <code>node file-ecosystem-scanner.js</code> to generate real data.
+          `;
+          document.querySelector('.visualization-container').appendChild(note);
+        }
+      } catch (error) {
+        console.error('Error loading or displaying data:', error);
+        loadingText.textContent = `Error: ${error.message}`;
+        // Keep the loading screen visible to show the error
+        return;
+      }
+      
+      // Hide loading screen
+      document.getElementById('loading').style.display = 'none';
+    }
+
+    // Event listeners
+    document.getElementById('colorBy').addEventListener('change', () => {
+      const colorBy = document.getElementById('colorBy').value;
+      d3.selectAll('.node')
+        .attr('fill', d => getNodeColor(d, colorBy));
+    });
+    
+    document.getElementById('hideUnconnected').addEventListener('change', () => {
+      // Reinitialize the graph with the new setting
+      document.getElementById('loading').style.display = 'flex';
+      document.getElementById('loadingText').textContent = "Updating visualization...";
+      
+      // Use setTimeout to allow the UI to update before reinitializing
+      setTimeout(() => {
+        initGraph();
+        document.getElementById('loading').style.display = 'none';
+      }, 10);
+    });
+
+    document.getElementById('refreshBtn').addEventListener('click', fetchFileData);
+
+    // Initial data fetch
+    window.addEventListener('load', fetchFileData);
+  </script>
+</body>
+</html>

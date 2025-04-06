@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple File Ecosystem Viewer</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0f0f1a;
+      color: #e0e0ff;
+      margin: 0;
+      padding: 20px;
+    }
+    
+    h1 {
+      color: #7b2cbf;
+      margin-bottom: 20px;
+    }
+    
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .section {
+      background-color: #1a1a2e;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(123, 44, 191, 0.5);
+    }
+    
+    .file-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .file-item {
+      padding: 8px;
+      border-bottom: 1px solid #3c096c;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .file-item:hover {
+      background-color: #3c096c;
+    }
+    
+    .connection {
+      color: #ff9e00;
+      font-weight: bold;
+    }
+    
+    #loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(15, 15, 26, 0.8);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #3c096c;
+      border-top-color: #ff9e00;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <div class="spinner"></div>
+    <div id="loadingText">Loading file ecosystem data...</div>
+  </div>
+
+  <div class="container">
+    <h1>ART File Ecosystem Viewer</h1>
+    
+    <div class="section">
+      <h2>Files (<span id="fileCount">0</span>)</h2>
+      <div class="file-list" id="fileList"></div>
+    </div>
+    
+    <div class="section">
+      <h2>Connections (<span id="connectionCount">0</span>)</h2>
+      <div class="file-list" id="connectionList"></div>
+    </div>
+  </div>
+
+  <script>
+    // Function to load and display data
+    async function loadData() {
+      const loadingElement = document.getElementById('loading');
+      const loadingText = document.getElementById('loadingText');
+      
+      try {
+        // Try multiple paths
+        const paths = [
+          'file-ecosystem-data.json',
+          './file-ecosystem-data.json',
+          '../file-ecosystem-data.json',
+          '../../file-ecosystem-data.json'
+        ];
+        
+        let data = null;
+        
+        for (const path of paths) {
+          try {
+            loadingText.textContent = `Trying to load from: ${path}`;
+            console.log(`Attempting to load from: ${path}`);
+            
+            const response = await fetch(path);
+            if (response.ok) {
+              const text = await response.text();
+              console.log(`Successfully loaded data from ${path}, size: ${text.length} bytes`);
+              loadingText.textContent = 'Parsing data...';
+              
+              data = JSON.parse(text);
+              console.log(`Successfully parsed data: ${data.nodes.length} nodes, ${data.links.length} links`);
+              break;
+            } else {
+              console.warn(`Failed to load from ${path}: ${response.status} ${response.statusText}`);
+            }
+          } catch (error) {
+            console.warn(`Error loading from ${path}:`, error);
+          }
+        }
+        
+        if (!data) {
+          // Use sample data if no data could be loaded
+          loadingText.textContent = 'Using sample data...';
+          console.log('Using sample data');
+          
+          data = {
+            nodes: [
+              { id: 1, name: 'server.js', path: '/server.js', size: 4096, lastModified: Date.now() - 86400000 * 2 },
+              { id: 2, name: 'package.json', path: '/package.json', size: 2048, lastModified: Date.now() - 86400000 * 5 },
+              { id: 3, name: 'ChatModule.tsx', path: '/interface/src/components/art/modules/ChatModule.tsx', size: 15360, lastModified: Date.now() - 3600000 },
+              { id: 4, name: 'ExecutorChatModule.tsx', path: '/interface/src/components/art/modules/ExecutorChatModule.tsx', size: 12288, lastModified: Date.now() - 3600000 * 2 },
+              { id: 5, name: 'AutoConversation.tsx', path: '/interface/src/components/art/modules/AutoConversation.tsx', size: 8192, lastModified: Date.now() - 86400000 }
+            ],
+            links: [
+              { source: 1, target: 2, weight: 2 },
+              { source: 3, target: 5, weight: 3 },
+              { source: 4, target: 5, weight: 3 }
+            ]
+          };
+        }
+        
+        // Display the data
+        displayData(data);
+      } catch (error) {
+        console.error('Error loading or displaying data:', error);
+        loadingText.textContent = `Error: ${error.message}`;
+        // Keep the loading screen visible to show the error
+        return;
+      }
+      
+      // Hide loading screen
+      loadingElement.style.display = 'none';
+    }
+    
+    // Function to display the data
+    function displayData(data) {
+      const fileList = document.getElementById('fileList');
+      const connectionList = document.getElementById('connectionList');
+      const fileCount = document.getElementById('fileCount');
+      const connectionCount = document.getElementById('connectionCount');
+      
+      // Update counts
+      fileCount.textContent = data.nodes.length;
+      connectionCount.textContent = data.links.length;
+      
+      // Clear lists
+      fileList.innerHTML = '';
+      connectionList.innerHTML = '';
+      
+      // Format file size
+      function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      }
+      
+      // Format date
+      function formatDate(timestamp) {
+        const date = new Date(timestamp);
+        return date.toLocaleString();
+      }
+      
+      // Display files
+      data.nodes.forEach(node => {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'file-item';
+        fileItem.innerHTML = `
+          <div>${node.name} <span style="color: #a0a0c0;">(${node.path})</span></div>
+          <div>${formatFileSize(node.size || 0)}</div>
+        `;
+        fileList.appendChild(fileItem);
+      });
+      
+      // Create a map of node IDs to nodes
+      const nodeMap = new Map();
+      data.nodes.forEach(node => {
+        nodeMap.set(node.id, node);
+      });
+      
+      // Display connections
+      data.links.forEach(link => {
+        const sourceNode = nodeMap.get(typeof link.source === 'object' ? link.source.id : link.source);
+        const targetNode = nodeMap.get(typeof link.target === 'object' ? link.target.id : link.target);
+        
+        if (sourceNode && targetNode) {
+          const connectionItem = document.createElement('div');
+          connectionItem.className = 'file-item';
+          connectionItem.innerHTML = `
+            <div><span class="connection">${sourceNode.name}</span> → <span class="connection">${targetNode.name}</span></div>
+            <div>Weight: ${link.weight || 1}</div>
+          `;
+          connectionList.appendChild(connectionItem);
+        }
+      });
+    }
+    
+    // Load data when the page loads
+    window.addEventListener('load', loadData);
+  </script>
+</body>
+</html>

@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ART Ecosystem Table View</title>
+  <style>
+    :root {
+      --bg-primary: #0f0f1a;
+      --bg-secondary: #1a1a2e;
+      --text-primary: #e0e0ff;
+      --text-secondary: #a0a0c0;
+      --accent-primary: #7b2cbf;
+      --accent-secondary: #5a189a;
+      --accent-tertiary: #3c096c;
+      --highlight: #ff9e00;
+      --node-js: #f7df1e;
+      --node-html: #e34c26;
+      --node-css: #264de4;
+      --node-tsx: #3178c6;
+      --node-json: #5b5b5b;
+      --node-md: #083fa1;
+      --glow: 0 0 10px rgba(123, 44, 191, 0.5), 0 0 20px rgba(123, 44, 191, 0.3);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      padding: 20px;
+    }
+
+    header {
+      background-color: var(--bg-secondary);
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: var(--glow);
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      text-shadow: 0 0 5px var(--accent-primary);
+    }
+
+    .controls {
+      display: flex;
+      gap: 1rem;
+    }
+
+    button {
+      background-color: var(--accent-tertiary);
+      color: var(--text-primary);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 500;
+      box-shadow: var(--glow);
+    }
+
+    button:hover {
+      background-color: var(--accent-secondary);
+      transform: translateY(-2px);
+    }
+
+    input[type="text"] {
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--accent-tertiary);
+      padding: 0.5rem;
+      border-radius: 4px;
+      width: 300px;
+    }
+
+    .stats {
+      background-color: var(--bg-secondary);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: var(--glow);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .stat-card {
+      background-color: rgba(123, 44, 191, 0.2);
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--accent-tertiary);
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--highlight);
+    }
+
+    .stat-label {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: var(--bg-secondary);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--glow);
+    }
+
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid var(--accent-tertiary);
+    }
+
+    th {
+      background-color: var(--accent-tertiary);
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background-color: rgba(123, 44, 191, 0.2);
+    }
+    
+    tr.highlight {
+      background-color: rgba(255, 158, 0, 0.3);
+      animation: highlight-pulse 2s ease-in-out;
+    }
+    
+    @keyframes highlight-pulse {
+      0% { background-color: rgba(255, 158, 0, 0.1); }
+      50% { background-color: rgba(255, 158, 0, 0.3); }
+      100% { background-color: rgba(255, 158, 0, 0.1); }
+    }
+
+    .file-type {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+
+    .connections-list {
+      max-height: 100px;
+      overflow-y: auto;
+      font-size: 0.9rem;
+    }
+
+    .connection-item {
+      margin-bottom: 4px;
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+
+    .connection-item:hover {
+      background-color: var(--accent-tertiary);
+    }
+
+    .loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(15, 15, 26, 0.8);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid var(--accent-tertiary);
+      border-top-color: var(--highlight);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      gap: 10px;
+    }
+
+    .pagination button {
+      background-color: var(--accent-tertiary);
+      color: var(--text-primary);
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .pagination button.active {
+      background-color: var(--highlight);
+      color: var(--bg-primary);
+    }
+
+    .pagination button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .file-js { background-color: var(--node-js); }
+    .file-jsx { background-color: var(--node-js); }
+    .file-html { background-color: var(--node-html); }
+    .file-css { background-color: var(--node-css); }
+    .file-ts { background-color: var(--node-tsx); }
+    .file-tsx { background-color: var(--node-tsx); }
+    .file-json { background-color: var(--node-json); }
+    .file-md { background-color: var(--node-md); }
+    .file-default { background-color: var(--accent-primary); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ART Ecosystem Table View</h1>
+    <div class="controls">
+      <input type="text" id="searchInput" placeholder="Search files...">
+      <button id="refreshBtn">Refresh Data</button>
+    </div>
+  </header>
+
+  <div class="stats">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="totalFiles">0</div>
+        <div class="stat-label">Total Files</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="totalConnections">0</div>
+        <div class="stat-label">Total Connections</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="mostConnected">-</div>
+        <div class="stat-label">Most Connected File</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="avgConnections">0</div>
+        <div class="stat-label">Avg. Connections Per File</div>
+      </div>
+    </div>
+  </div>
+
+  <table id="filesTable">
+    <thead>
+      <tr>
+        <th>File Name</th>
+        <th>Path</th>
+        <th>Size</th>
+        <th>Last Modified</th>
+        <th>Connections</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+      <!-- Table rows will be added here -->
+    </tbody>
+  </table>
+
+  <div class="pagination" id="pagination">
+    <!-- Pagination buttons will be added here -->
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="loading-spinner"></div>
+    <div id="loadingText">Loading file ecosystem data...</div>
+  </div>
+
+  <script>
+    // Global variables
+    let graphData = { nodes: [], links: [] };
+    let filteredData = [];
+    let currentPage = 1;
+    const rowsPerPage = 20;
+
+    // Function to format file size
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // Function to format date
+    function formatDate(timestamp) {
+      const date = new Date(timestamp);
+      return date.toLocaleString();
+    }
+
+    // Function to get file extension
+    function getFileExtension(filename) {
+      return filename.split('.').pop().toLowerCase();
+    }
+
+    // Function to get file type class
+    function getFileTypeClass(filename) {
+      const ext = getFileExtension(filename);
+      return `file-${ext in {js:1, jsx:1, html:1, css:1, ts:1, tsx:1, json:1, md:1} ? ext : 'default'}`;
+    }
+
+    // Function to scroll to a specific row
+    function scrollToRow(rowId) {
+      const row = document.getElementById(rowId);
+      if (row) {
+        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        row.classList.add('highlight');
+        setTimeout(() => {
+          row.classList.remove('highlight');
+        }, 2000);
+      }
+    }
+
+    // Function to render the table
+    function renderTable() {
+      const tableBody = document.getElementById('tableBody');
+      tableBody.innerHTML = '';
+
+      // Calculate pagination
+      const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+      const startIndex = (currentPage - 1) * rowsPerPage;
+      const endIndex = Math.min(startIndex + rowsPerPage, filteredData.length);
+      
+      // Render pagination
+      renderPagination(totalPages);
+
+      // Render table rows
+      for (let i = startIndex; i < endIndex; i++) {
+        const node = filteredData[i];
+        
+        // Find connections for this node
+        const connections = graphData.links.filter(link => 
+          (typeof link.source === 'object' ? link.source.id : link.source) === node.id || 
+          (typeof link.target === 'object' ? link.target.id : link.target) === node.id
+        );
+        
+        // Create connection list HTML
+        let connectionsHtml = '';
+        if (connections.length === 0) {
+          connectionsHtml = '<div class="connection-item">No connections</div>';
+        } else {
+          connectionsHtml = '<div class="connections-list">';
+          connections.forEach(link => {
+            const connectedNodeId = (typeof link.source === 'object' ? link.source.id : link.source) === node.id 
+              ? (typeof link.target === 'object' ? link.target.id : link.target)
+              : (typeof link.source === 'object' ? link.source.id : link.source);
+            
+            const connectedNode = graphData.nodes.find(n => n.id === connectedNodeId);
+            if (connectedNode) {
+              connectionsHtml += `<div class="connection-item" data-id="${connectedNode.id}">${connectedNode.name}</div>`;
+            }
+          });
+          connectionsHtml += '</div>';
+        }
+        
+        // Create table row
+        const row = document.createElement('tr');
+        row.id = `row-${node.id}`;
+        row.innerHTML = `
+          <td>
+            <span class="file-type ${getFileTypeClass(node.name)}"></span>
+            ${node.name}
+          </td>
+          <td>${node.path}</td>
+          <td>${formatFileSize(node.size || 0)}</td>
+          <td>${formatDate(node.lastModified || 0)}</td>
+          <td>${connectionsHtml}</td>
+        `;
+        
+        tableBody.appendChild(row);
+      }
+      
+      // Add event listeners to connection items
+      document.querySelectorAll('.connection-item[data-id]').forEach(item => {
+        item.addEventListener('click', () => {
+          const nodeId = parseInt(item.getAttribute('data-id'));
+          const node = graphData.nodes.find(n => n.id === nodeId);
+          if (node) {
+            // Find which page this node is on
+            const nodeIndex = filteredData.findIndex(n => n.id === nodeId);
+            if (nodeIndex !== -1) {
+              const nodePage = Math.floor(nodeIndex / rowsPerPage) + 1;
+              if (nodePage !== currentPage) {
+                currentPage = nodePage;
+                renderTable();
+              }
+              setTimeout(() => {
+                scrollToRow(`row-${nodeId}`);
+              }, 100);
+            }
+          }
+        });
+      });
+    }
+
+    // Function to render pagination
+    function renderPagination(totalPages) {
+      const pagination = document.getElementById('pagination');
+      pagination.innerHTML = '';
+      
+      // Previous button
+      const prevButton = document.createElement('button');
+      prevButton.textContent = '← Previous';
+      prevButton.disabled = currentPage === 1;
+      prevButton.addEventListener('click', () => {
+        if (currentPage > 1) {
+          currentPage--;
+          renderTable();
+        }
+      });
+      pagination.appendChild(prevButton);
+      
+      // Page buttons
+      const maxButtons = 5;
+      const startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+      const endPage = Math.min(totalPages, startPage + maxButtons - 1);
+      
+      for (let i = startPage; i <= endPage; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.classList.toggle('active', i === currentPage);
+        pageButton.addEventListener('click', () => {
+          currentPage = i;
+          renderTable();
+        });
+        pagination.appendChild(pageButton);
+      }
+      
+      // Next button
+      const nextButton = document.createElement('button');
+      nextButton.textContent = 'Next →';
+      nextButton.disabled = currentPage === totalPages;
+      nextButton.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+          currentPage++;
+          renderTable();
+        }
+      });
+      pagination.appendChild(nextButton);
+    }
+
+    // Function to update statistics
+    function updateStats() {
+      document.getElementById('totalFiles').textContent = graphData.nodes.length;
+      document.getElementById('totalConnections').textContent = graphData.links.length;
+      
+      // Find most connected file
+      const nodeConnections = {};
+      graphData.links.forEach(link => {
+        const sourceId = typeof link.source === 'object' ? link.source.id : link.source;
+        const targetId = typeof link.target === 'object' ? link.target.id : link.target;
+        nodeConnections[sourceId] = (nodeConnections[sourceId] || 0) + 1;
+        nodeConnections[targetId] = (nodeConnections[targetId] || 0) + 1;
+      });
+      
+      let maxConnections = 0;
+      let mostConnectedNodeId = null;
+      
+      for (const [nodeId, count] of Object.entries(nodeConnections)) {
+        if (count > maxConnections) {
+          maxConnections = count;
+          mostConnectedNodeId = parseInt(nodeId);
+        }
+      }
+      
+      if (mostConnectedNodeId !== null) {
+        const mostConnectedNode = graphData.nodes.find(n => n.id === mostConnectedNodeId);
+        if (mostConnectedNode) {
+          document.getElementById('mostConnected').textContent = mostConnectedNode.name;
+        }
+      }
+      
+      // Calculate average connections per file
+      const totalNodes = graphData.nodes.length;
+      const avgConnections = totalNodes > 0 ? (graphData.links.length / totalNodes).toFixed(1) : 0;
+      document.getElementById('avgConnections').textContent = avgConnections;
+    }
+
+    // Function to filter data based on search
+    function filterData() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      
+      if (searchTerm === '') {
+        filteredData = [...graphData.nodes];
+      } else {
+        filteredData = graphData.nodes.filter(node => 
+          node.name.toLowerCase().includes(searchTerm) || 
+          node.path.toLowerCase().includes(searchTerm)
+        );
+      }
+      
+      currentPage = 1;
+      renderTable();
+    }
+
+    // Function to fetch file data
+    async function fetchFileData() {
+      document.getElementById('loading').style.display = 'flex';
+      const loadingText = document.getElementById('loadingText');
+      
+      try {
+        // Try multiple paths
+        const paths = [
+          'file-ecosystem-data.json',
+          './file-ecosystem-data.json',
+          '../file-ecosystem-data.json',
+          '../../file-ecosystem-data.json'
+        ];
+        
+        let loaded = false;
+        
+        for (const path of paths) {
+          try {
+            loadingText.textContent = `Trying to load from: ${path}`;
+            console.log(`Attempting to load from: ${path}`);
+            
+            const response = await fetch(path);
+            if (response.ok) {
+              const text = await response.text();
+              console.log(`Successfully loaded data from ${path}, size: ${text.length} bytes`);
+              loadingText.textContent = 'Parsing data...';
+              
+              // Use a small delay to allow the UI to update
+              await new Promise(resolve => setTimeout(resolve, 10));
+              
+              graphData = JSON.parse(text);
+              console.log(`Successfully parsed data: ${graphData.nodes.length} nodes, ${graphData.links.length} links`);
+              loaded = true;
+              break;
+            } else {
+              console.warn(`Failed to load from ${path}: ${response.status} ${response.statusText}`);
+            }
+          } catch (pathError) {
+            console.warn(`Error loading from ${path}:`, pathError);
+          }
+        }
+        
+        if (!loaded) {
+          // Use sample data if no data could be loaded
+          loadingText.textContent = 'Using sample data...';
+          console.log('Using sample data');
+          
+          graphData = {
+            nodes: [
+              { id: 1, name: 'server.js', path: '/server.js', size: 4096, lastModified: Date.now() - 86400000 * 2 },
+              { id: 2, name: 'package.json', path: '/package.json', size: 2048, lastModified: Date.now() - 86400000 * 5 },
+              { id: 3, name: 'ChatModule.tsx', path: '/interface/src/components/art/modules/ChatModule.tsx', size: 15360, lastModified: Date.now() - 3600000 },
+              { id: 4, name: 'ExecutorChatModule.tsx', path: '/interface/src/components/art/modules/ExecutorChatModule.tsx', size: 12288, lastModified: Date.now() - 3600000 * 2 },
+              { id: 5, name: 'AutoConversation.tsx', path: '/interface/src/components/art/modules/AutoConversation.tsx', size: 8192, lastModified: Date.now() - 86400000 },
+              { id: 6, name: 'TodoModule.tsx', path: '/interface/src/components/art/modules/TodoModule.tsx', size: 20480, lastModified: Date.now() },
+              { id: 7, name: 'AgendaModule.tsx', path: '/interface/src/components/art/modules/AgendaModule.tsx', size: 18432, lastModified: Date.now() },
+              { id: 8, name: 'BaseModule.tsx', path: '/interface/src/components/art/modules/BaseModule.tsx', size: 3072, lastModified: Date.now() - 86400000 * 10 }
+            ],
+            links: [
+              { source: 1, target: 2, weight: 2 },
+              { source: 3, target: 5, weight: 3 },
+              { source: 4, target: 5, weight: 3 },
+              { source: 3, target: 8, weight: 1 },
+              { source: 4, target: 8, weight: 1 },
+              { source: 6, target: 8, weight: 1 },
+              { source: 7, target: 8, weight: 1 }
+            ]
+          };
+        }
+        
+        // Update filtered data
+        filteredData = [...graphData.nodes];
+        
+        // Update statistics
+        updateStats();
+        
+        // Render the table
+        renderTable();
+      } catch (error) {
+        console.error('Error loading or displaying data:', error);
+        loadingText.textContent = `Error: ${error.message}`;
+        // Keep the loading screen visible to show the error
+        return;
+      }
+      
+      // Hide loading screen
+      document.getElementById('loading').style.display = 'none';
+    }
+
+    // Event listeners
+    document.getElementById('searchInput').addEventListener('input', filterData);
+    document.getElementById('refreshBtn').addEventListener('click', fetchFileData);
+
+    // Initial data fetch
+    window.addEventListener('load', fetchFileData);
+  </script>
+</body>
+</html>

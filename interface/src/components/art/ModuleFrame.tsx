@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { ModuleType, CodeSnippet } from '@/types/artTypes';
 import ChatModule from './modules/ChatModule';
@@ -29,6 +29,7 @@ interface ModuleFrameProps {
   onNewCodeSnippet?: (snippet: CodeSnippet) => void;
   codeSnippets?: CodeSnippet[];
   onSendToChat?: (content: string) => void; // Add missing prop
+  chatRefs?: React.MutableRefObject<any>; // Add missing prop
   className?: string; // Add missing prop
 }
 
@@ -38,6 +39,7 @@ type ModuleRef = {
   addMessage?: (msg: string) => void;
 };
 
+// Ensure you're forwarding all props correctly including chatRefs
 const ModuleFrame = forwardRef<ModuleRef, ModuleFrameProps>(({
   id, 
   moduleType, 
@@ -48,9 +50,26 @@ const ModuleFrame = forwardRef<ModuleRef, ModuleFrameProps>(({
   selectedApi,
   nanoGptModel,
   onNewCodeSnippet,
-  codeSnippets
+  codeSnippets,
+  onSendToChat,
+  chatRefs, // Make sure this prop is defined and passed through
+  className
 }, ref) => {
   const { toast } = useToast();
+
+  // Add logging when ref changes
+  useEffect(() => {
+    console.log(`ModuleFrame ${id} rendered with moduleType: ${moduleType}, ref forwarded: ${!!ref}`);
+  }, [id, moduleType, ref]);
+
+  useEffect(() => {
+    if (chatRefs) {
+      console.log(`ModuleFrame ${id} has chatRefs with keys:`, 
+        Object.keys(chatRefs.current));
+    } else {
+      console.log(`ModuleFrame ${id} has NO chatRefs passed`);
+    }
+  }, [id, chatRefs]);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
@@ -68,6 +87,7 @@ const ModuleFrame = forwardRef<ModuleRef, ModuleFrameProps>(({
             selectedApi={selectedApi} 
             nanoGptModel={nanoGptModel} 
             onNewCodeSnippet={onNewCodeSnippet}
+            chatRefs={chatRefs} // Pass the chatRefs to ChatModule
           />
         );
       case 'coding':

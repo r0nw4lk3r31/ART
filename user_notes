@@ -12,3 +12,7 @@ C:\Users\r0nw4\ARTlab\ART> cd C:\Users\r0nw4\ARTlab\ART\interface
 server start for executor CodingModule
 
 node server.js
+
+start file-ecosystem-visualizer.html
+
+node ecosystem-visualizer.js

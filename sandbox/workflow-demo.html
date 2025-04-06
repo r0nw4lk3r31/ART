@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ART Workflow Demo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      display: flex;
+      gap: 20px;
+    }
+    .module {
+      flex: 1;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 15px;
+      height: 600px;
+      display: flex;
+      flex-direction: column;
+    }
+    .module-header {
+      display: flex;
+      align-items: center;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      margin-bottom: 10px;
+    }
+    .module-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    .icon {
+      width: 24px;
+      height: 24px;
+      background-color: #eee;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 0;
+    }
+    .message {
+      margin-bottom: 15px;
+      max-width: 90%;
+    }
+    .user {
+      margin-left: auto;
+      background-color: #007bff;
+      color: white;
+      border-radius: 18px 18px 0 18px;
+      padding: 10px 15px;
+    }
+    .assistant {
+      background-color: #e9ecef;
+      color: #212529;
+      border-radius: 18px 18px 18px 0;
+      padding: 10px 15px;
+    }
+    .timestamp {
+      font-size: 12px;
+      color: #6c757d;
+      margin-top: 5px;
+    }
+    .input-area {
+      display: flex;
+      padding-top: 10px;
+      border-top: 1px solid #eee;
+    }
+    input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      margin-right: 10px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 15px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0069d9;
+    }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    .phase {
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      padding: 10px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .phase-label {
+      font-weight: bold;
+      margin-right: 10px;
+    }
+    .phase-value {
+      color: #007bff;
+    }
+    .code {
+      font-family: monospace;
+      white-space: pre-wrap;
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 12px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .step-button {
+      background-color: #28a745;
+    }
+    .reset-button {
+      background-color: #dc3545;
+    }
+  </style>
+</head>
+<body>
+  <h1>ART Workflow Demo</h1>
+  <p>This demonstrates the conversation flow between ChatModule and ExecutorChatModule for building a weather module.</p>
+  
+  <div class="phase">
+    <span class="phase-label">Current Phase:</span>
+    <span class="phase-value" id="current-phase">initial</span>
+  </div>
+  
+  <div class="container">
+    <div class="module">
+      <div class="module-header">
+        <div class="icon">💬</div>
+        <div class="module-title">ChatModule (frame1)</div>
+      </div>
+      <div class="messages" id="chat-messages">
+        <div class="message assistant">
+          Hello! I am ART, your assistant. How can I help?
+          <div class="timestamp">4:18:00 PM</div>
+        </div>
+      </div>
+      <div class="input-area">
+        <input type="text" id="chat-input" placeholder="Send message..." value="build a weather module that runs standalone in a browser via HTML. Use Open Weather API">
+        <button id="chat-send">Send</button>
+      </div>
+    </div>
+    
+    <div class="module">
+      <div class="module-header">
+        <div class="icon">⚙️</div>
+        <div class="module-title">ExecutorChatModule (frame2)</div>
+      </div>
+      <div class="messages" id="executor-messages">
+        <div class="message assistant">
+          Executor ready. Send 'build: ```lang
+code```' or a task for ART to write to the sandbox.
+          <div class="timestamp">4:18:00 PM</div>
+        </div>
+      </div>
+      <div class="input-area">
+        <input type="text" id="executor-input" placeholder="Send command..." disabled>
+        <button id="executor-send" disabled>Send</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="controls">
+    <button id="step-button" class="step-button">Step Through Workflow</button>
+    <button id="reset-button" class="reset-button">Reset Demo</button>
+  </div>
+
+  <script>
+    // Workflow steps
+    const workflow = [
+      {
+        phase: "initial",
+        action: "chat-to-executor",
+        message: "build a weather module that runs standalone in a browser via HTML. Use Open Weather API",
+        sender: "user"
+      },
+      {
+        phase: "building",
+        action: "executor-to-chat",
+        message: "ART created weather-1712412000000/html.html. What's next?",
+        sender: "assistant",
+        code: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather Module</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .weather-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .weather-form {
+      margin-bottom: 20px;
+    }
+    input, button {
+      padding: 8px;
+      margin-right: 8px;
+    }
+    button {
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+    .error {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Weather Module</h1>
+  
+  <div class="weather-form">
+    <input type="text" id="city" placeholder="Enter city name">
+    <button onclick="getWeather()">Get Weather</button>
+  </div>
+  
+  <div class="weather-card" id="weather-info">
+    <p>Enter a city name to get the current weather.</p>
+  </div>
+  
+  <script>
+    function getWeather() {
+      const city = document.getElementById('city').value;
+      const weatherInfo = document.getElementById('weather-info');
+      
+      if (!city) {
+        weatherInfo.innerHTML = '<p class="error">Please enter a city name</p>';
+        return;
+      }
+      
+      weatherInfo.innerHTML = '<p>Loading weather data...</p>';
+      
+      // Replace with your actual API key
+      const apiKey = 'YOUR_OPENWEATHER_API_KEY';
+      const url = \`https://api.openweathermap.org/data/2.5/weather?q=\${city}&appid=\${apiKey}&units=metric\`;
+      
+      fetch(url)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('City not found or API error');
+          }
+          return response.json();
+        })
+        .then(data => {
+          const temp = data.main.temp;
+          const description = data.weather[0].description;
+          const humidity = data.main.humidity;
+          const windSpeed = data.wind.speed;
+          
+          weatherInfo.innerHTML = \`
+            <h2>Weather in \${city}</h2>
+            <p>Temperature: \${temp}°C</p>
+            <p>Conditions: \${description}</p>
+            <p>Humidity: \${humidity}%</p>
+            <p>Wind Speed: \${windSpeed} m/s</p>
+          \`;
+        })
+        .catch(error => {
+          weatherInfo.innerHTML = \`<p class="error">Error: \${error.message}</p>\`;
+        });
+    }
+  </script>
+</body>
+</html>`
+      },
+      {
+        phase: "testing",
+        action: "chat-to-executor",
+        message: "Test it",
+        sender: "assistant"
+      },
+      {
+        phase: "fixing",
+        action: "executor-to-chat",
+        message: "Error: API key missing in weather module",
+        sender: "assistant"
+      },
+      {
+        phase: "testing",
+        action: "chat-to-executor",
+        message: `Fix: \`\`\`html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather Module</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .weather-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .weather-form {
+      margin-bottom: 20px;
+    }
+    input, button {
+      padding: 8px;
+      margin-right: 8px;
+    }
+    button {
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+    .error {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Weather Module</h1>
+  
+  <div class="weather-form">
+    <input type="text" id="city" placeholder="Enter city name">
+    <button onclick="getWeather()">Get Weather</button>
+  </div>
+  
+  <div class="weather-card" id="weather-info">
+    <p>Enter a city name to get the current weather.</p>
+  </div>
+  
+  <script>
+    // Store API key as a constant
+    const API_KEY = '4da2a6c7c8b94ec7b8f175924232711';
+    
+    function getWeather() {
+      const city = document.getElementById('city').value;
+      const weatherInfo = document.getElementById('weather-info');
+      
+      if (!city) {
+        weatherInfo.innerHTML = '<p class="error">Please enter a city name</p>';
+        return;
+      }
+      
+      weatherInfo.innerHTML = '<p>Loading weather data...</p>';
+      
+      // Use the API_KEY constant
+      const url = \`https://api.openweathermap.org/data/2.5/weather?q=\${city}&appid=\${API_KEY}&units=metric\`;
+      
+      fetch(url)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('City not found or API error');
+          }
+          return response.json();
+        })
+        .then(data => {
+          const temp = data.main.temp;
+          const description = data.weather[0].description;
+          const humidity = data.main.humidity;
+          const windSpeed = data.wind.speed;
+          
+          weatherInfo.innerHTML = \`
+            <h2>Weather in \${city}</h2>
+            <p>Temperature: \${temp}°C</p>
+            <p>Conditions: \${description}</p>
+            <p>Humidity: \${humidity}%</p>
+            <p>Wind Speed: \${windSpeed} m/s</p>
+          \`;
+        })
+        .catch(error => {
+          weatherInfo.innerHTML = \`<p class="error">Error: \${error.message}</p>\`;
+        });
+    }
+  </script>
+</body>
+</html>\`\`\``,
+        sender: "assistant"
+      },
+      {
+        phase: "done",
+        action: "executor-to-chat",
+        message: "Success",
+        sender: "assistant"
+      },
+      {
+        phase: "done",
+        action: "chat-to-user",
+        message: "Success: Weather module built successfully!",
+        sender: "assistant"
+      }
+    ];
+    
+    let currentStep = 0;
+    
+    // DOM elements
+    const chatMessages = document.getElementById('chat-messages');
+    const executorMessages = document.getElementById('executor-messages');
+    const chatInput = document.getElementById('chat-input');
+    const executorInput = document.getElementById('executor-input');
+    const chatSendButton = document.getElementById('chat-send');
+    const executorSendButton = document.getElementById('executor-send');
+    const stepButton = document.getElementById('step-button');
+    const resetButton = document.getElementById('reset-button');
+    const phaseDisplay = document.getElementById('current-phase');
+    
+    // Add message to chat
+    function addMessage(container, message, sender, includeCode = false) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${sender}`;
+      messageDiv.textContent = message;
+      
+      const timestamp = document.createElement('div');
+      timestamp.className = 'timestamp';
+      timestamp.textContent = new Date().toLocaleTimeString();
+      messageDiv.appendChild(timestamp);
+      
+      if (includeCode && workflow[currentStep].code) {
+        const codeDiv = document.createElement('div');
+        codeDiv.className = 'code';
+        codeDiv.textContent = workflow[currentStep].code;
+        messageDiv.appendChild(codeDiv);
+      }
+      
+      container.appendChild(messageDiv);
+      container.scrollTop = container.scrollHeight;
+    }
+    
+    // Process next step in workflow
+    function processNextStep() {
+      if (currentStep >= workflow.length) {
+        alert('Workflow complete!');
+        return;
+      }
+      
+      const step = workflow[currentStep];
+      phaseDisplay.textContent = step.phase;
+      
+      switch (step.action) {
+        case 'chat-to-executor':
+          addMessage(chatMessages, step.message, step.sender);
+          addMessage(executorMessages, `From frame1: ${step.message}`, 'user');
+          break;
+        case 'executor-to-chat':
+          addMessage(executorMessages, step.message, step.sender, true);
+          addMessage(chatMessages, `From frame2: ${step.message}`, 'user');
+          break;
+        case 'chat-to-user':
+          addMessage(chatMessages, step.message, step.sender);
+          break;
+      }
+      
+      currentStep++;
+    }
+    
+    // Event listeners
+    stepButton.addEventListener('click', processNextStep);
+    
+    resetButton.addEventListener('click', () => {
+      // Reset the chat messages
+      chatMessages.innerHTML = '';
+      executorMessages.innerHTML = '';
+      
+      // Add initial messages
+      const chatInitialMessage = document.createElement('div');
+      chatInitialMessage.className = 'message assistant';
+      chatInitialMessage.textContent = 'Hello! I am ART, your assistant. How can I help?';
+      
+      const chatTimestamp = document.createElement('div');
+      chatTimestamp.className = 'timestamp';
+      chatTimestamp.textContent = '4:18:00 PM';
+      chatInitialMessage.appendChild(chatTimestamp);
+      
+      chatMessages.appendChild(chatInitialMessage);
+      
+      const executorInitialMessage = document.createElement('div');
+      executorInitialMessage.className = 'message assistant';
+      executorInitialMessage.textContent = "Executor ready. Send 'build: ```lang\ncode```' or a task for ART to write to the sandbox.";
+      
+      const executorTimestamp = document.createElement('div');
+      executorTimestamp.className = 'timestamp';
+      executorTimestamp.textContent = '4:18:00 PM';
+      executorInitialMessage.appendChild(executorTimestamp);
+      
+      executorMessages.appendChild(executorInitialMessage);
+      
+      // Reset step counter
+      currentStep = 0;
+      phaseDisplay.textContent = 'initial';
+    });
+    
+    chatSendButton.addEventListener('click', () => {
+      if (currentStep === 0) {
+        processNextStep();
+      }
+    });
+  </script>
+</body>
+</html>

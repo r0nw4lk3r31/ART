@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ecosystem Visualizer</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    :root {
+      --bg-primary: #0f0f1a;
+      --bg-secondary: #1a1a2e;
+      --text-primary: #e0e0ff;
+      --accent-primary: #7b2cbf;
+      --accent-secondary: #5a189a;
+      --accent-tertiary: #3c096c;
+      --highlight: #ff9e00;
+      --cluster-link: #00ffcc;
+      --node-js: #f7df1e;
+      --node-html: #e34c26;
+      --node-css: #264de4;
+      --node-tsx: #3178c6;
+      --node-json: #5b5b5b;
+      --node-md: #083fa1;
+      --node-folder: #7b2cbf;
+      --glow: 0 0 10px rgba(123, 44, 191, 0.5), 0 0 20px rgba(123, 44, 191, 0.3);
+    }
+    body {
+      margin: 0;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    svg { width: 100%; height: 100%; }
+    .link-containment { stroke: var(--accent-tertiary); stroke-opacity: 0.8; stroke-width: 2; }
+    .link-dependency { stroke: var(--highlight); stroke-opacity: 0.8; stroke-width: 2; }
+    .link-cluster { stroke: var(--cluster-link); stroke-opacity: 0.6; stroke-width: 1.5; }
+    .label { fill: var(--text-primary); pointer-events: none; }
+    .grid-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: linear-gradient(rgba(123, 44, 191, 0.1) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(123, 44, 191, 0.1) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: -1;
+    }
+    .legend {
+      position: absolute;
+      bottom: 1rem;
+      left: 1rem;
+      background: rgba(26, 26, 46, 0.8);
+      border: 1px solid var(--accent-tertiary);
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: var(--glow);
+      z-index: 10;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.3rem;
+    }
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 0.5rem;
+    }
+    .legend-label { font-size: 0.8rem; }
+    .toggle {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      background: rgba(26, 26, 46, 0.8);
+      border: 1px solid var(--accent-tertiary);
+      border-radius: 4px;
+      padding: 0.5rem;
+      box-shadow: var(--glow);
+      z-index: 10;
+    }
+    .info-panel {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(26, 26, 46, 0.9);
+      border: 1px solid var(--accent-tertiary);
+      border-radius: 8px;
+      padding: 1rem;
+      max-width: 300px;
+      box-shadow: var(--glow);
+      z-index: 10;
+      display: none;
+      font-size: 0.9rem;
+    }
+    .info-panel h3 { margin: 0 0 0.5rem; font-size: 1rem; }
+    .info-panel span { font-weight: bold; }
+    .loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: var(--text-primary);
+      font-size: 1.2rem;
+      z-index: 5;
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-background"></div>
+  <div class="loading" id="loading">Loading...</div>
+  <svg id="graph"></svg>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-color" style="background: var(--node-js);"></div><span class="legend-label">JavaScript (.js)</span></div>
+    <div class="legend-item"><div class="legend-color" style="background: var(--node-html);"></div><span class="legend-label">HTML (.html)</span></div>
+    <div class="legend-item"><div class="legend-color" style="background: var(--node-css);"></div><span class="legend-label">CSS (.css)</span></div>
+    <div class="legend-item"><div class="legend-color" style="background: var(--node-tsx);"></div><span class="legend-label">TypeScript (.ts, .tsx)</span></div>
+    <div class="legend-item"><div class="legend-color" style="background: var(--node-json);"></div><span class="legend-label">JSON (.json)</span></div>
+    <div class="legend-item"><div class="legend-color" style="background: var(--node-md);"></div><span class="legend-label">Markdown (.md)</span></div>
+    <div class="legend-item"><div class="legend-color" style="background: var(--node-folder);"></div><span class="legend-label">Folder</span></div>
+    <div class="legend-item"><div class="legend-color" style="background: var(--accent-tertiary);"></div><span class="legend-label">Containment Link</span></div>
+    <div class="legend-item"><div class="legend-color" style="background: var(--highlight);"></div><span class="legend-label">Dependency Link</span></div>
+    <div class="legend-item"><div class="legend-color" style="background: var(--cluster-link);"></div><span class="legend-label">Cluster Link</span></div>
+  </div>
+  <div class="toggle">
+    <label><input type="checkbox" id="hideUnconnected" checked> Hide Unconnected</label>
+  </div>
+  <div class="info-panel" id="infoPanel">
+    <h3 id="infoName"></h3>
+    <p><span>Path:</span> <span id="infoPath"></span></p>
+    <p><span>Type:</span> <span id="infoType"></span></p>
+    <p><span>Size:</span> <span id="infoSize"></span></p>
+    <p><span>Connections:</span> <span id="infoConnections"></span></p>
+    <p><span>Last Touched:</span> <span id="infoMtime"></span></p>
+    <p><span>Line Count:</span> <span id="infoLineCount"></span></p>
+  </div>
+  <script>
+    const svg = d3.select('#graph');
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const g = svg.append('g');
+    const hideUnconnectedCheckbox = document.getElementById('hideUnconnected');
+    const infoPanel = document.getElementById('infoPanel');
+    const infoName = document.getElementById('infoName');
+    const infoPath = document.getElementById('infoPath');
+    const infoType = document.getElementById('infoType');
+    const infoSize = document.getElementById('infoSize');
+    const infoConnections = document.getElementById('infoConnections');
+    const infoMtime = document.getElementById('infoMtime');
+    const infoLineCount = document.getElementById('infoLineCount');
+    const loading = document.getElementById('loading');
+
+    const simulation = d3.forceSimulation()
+      .force('link', d3.forceLink().id(d => d.id).distance(50))
+      .force('charge', d3.forceManyBody().strength(-150))
+      .force('center', d3.forceCenter(width / 2, height / 2))
+      .force('collision', d3.forceCollide().radius(20))
+      .force('tsxX', d3.forceX(d => d.cluster === 'tsx' ? width * 0.7 : width / 2).strength(0.1))
+      .force('tsxY', d3.forceY(d => d.cluster === 'tsx' ? height * 0.3 : height / 2).strength(0.1));
+
+    let currentZoom = 1;
+    const zoom = d3.zoom().scaleExtent([0.1, 10]).on('zoom', (event) => {
+      g.attr('transform', event.transform);
+      currentZoom = event.transform.k;
+      updateNodeSizes();
+    });
+    svg.call(zoom);
+
+    const fileColors = {
+      '.js': 'var(--node-js)', '.jsx': 'var(--node-js)',
+      '.html': 'var(--node-html)', '.css': 'var(--node-css)',
+      '.ts': 'var(--node-tsx)', '.tsx': 'var(--node-tsx)',
+      '.json': 'var(--node-json)', '.md': 'var(--node-md)',
+      'default': '#ffffff'
+    };
+
+    function getNodeColor(node) {
+      if (node.type === 'folder') return 'var(--node-folder)';
+      const ext = node.path.slice(node.path.lastIndexOf('.')).toLowerCase();
+      return fileColors[ext] || fileColors.default;
+    }
+
+    function getNodeRadius(node) {
+      if (node.type === 'folder') return 10;
+      return Math.min(7 + Math.log2(node.size || 1), 15); // Size-based radius
+    }
+
+    function formatSize(bytes) {
+      if (bytes < 1024) return `${bytes} B`;
+      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+      return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    }
+
+    function updateNodeSizes() {
+      g.selectAll('.node').attr('r', d => getNodeRadius(d) / currentZoom);
+      g.selectAll('.label').attr('font-size', `${14 / currentZoom}px`);
+      g.selectAll('.link').attr('stroke-width', 2 / currentZoom);
+    }
+
+    async function updateGraph() {
+      loading.style.display = 'block';
+      try {
+        g.selectAll('*').remove();
+
+        const response = await fetch('http://localhost:4000/data', { timeout: 10000 });
+        if (!response.ok) throw new Error(`Fetch failed: ${response.status}`);
+        const data = await response.json();
+        console.log('Received data:', JSON.stringify(data, null, 2));
+
+        data.nodes.forEach(node => {
+          if (node.path === '') {
+            node.fx = width / 2;
+            node.fy = height / 2;
+          } else if (node.isRoot) {
+            node.fx = width / 2 + (Math.random() - 0.5) * 100;
+            node.fy = height / 2 + (Math.random() - 0.5) * 100;
+          }
+        });
+
+        let filteredNodes = data.nodes;
+        let filteredLinks = data.links;
+        if (hideUnconnectedCheckbox.checked) {
+          const connectedNodeIds = new Set();
+          data.links.forEach(link => {
+            connectedNodeIds.add(link.source.id || link.source);
+            connectedNodeIds.add(link.target.id || link.target);
+          });
+          filteredNodes = data.nodes.filter(node => connectedNodeIds.has(node.id));
+          filteredLinks = data.links.filter(link => 
+            connectedNodeIds.has(link.source.id || link.source) && 
+            connectedNodeIds.has(link.target.id || link.target));
+        }
+
+        console.log(`Rendering ${filteredNodes.length} nodes, ${filteredLinks.length} links`);
+
+        const link = g.selectAll('.link')
+          .data(filteredLinks, d => `${d.source.id}-${d.target.id}`)
+          .join('line')
+          .attr('class', d => `link-${d.type}`);
+
+        const node = g.selectAll('.node')
+          .data(filteredNodes, d => d.id)
+          .join('circle')
+          .attr('r', getNodeRadius)
+          .attr('fill', getNodeColor)
+          .attr('stroke', '#000')
+          .attr('stroke-width', 1)
+          .on('mouseover', (event, d) => {
+            infoPanel.style.display = 'block';
+            infoPanel.style.left = `${event.pageX + 10}px`;
+            infoPanel.style.top = `${event.pageY + 10}px`;
+            infoName.textContent = d.name;
+            infoPath.textContent = d.path;
+            infoType.textContent = d.type;
+            infoSize.textContent = d.size !== undefined ? formatSize(d.size) : 'N/A';
+            infoConnections.textContent = `${d.directConnections || 0} direct, ${d.indirectConnections || 0} indirect`;
+            infoMtime.textContent = d.mtime ? new Date(d.mtime).toLocaleString() : 'N/A';
+            infoLineCount.textContent = d.lineCount !== undefined ? d.lineCount : 'N/A';
+          })
+          .on('mouseout', () => {
+            infoPanel.style.display = 'none';
+          })
+          .on('click', (event, d) => {
+            event.stopPropagation();
+          })
+          .call(d3.drag()
+            .on('start', (event, d) => {
+              if (!event.active) simulation.alphaTarget(0.3).restart();
+              d.fx = d.x;
+              d.fy = d.y;
+            })
+            .on('drag', (event, d) => {
+              d.fx = event.x;
+              d.fy = event.y;
+            })
+            .on('end', (event, d) => {
+              if (!event.active) simulation.alphaTarget(0);
+              if (!d.isRoot && d.path !== '') { d.fx = null; d.fy = null; }
+            }));
+
+        const label = g.selectAll('.label')
+          .data(filteredNodes, d => d.id)
+          .join('text')
+          .attr('class', 'label')
+          .text(d => d.name);
+
+        simulation.nodes(filteredNodes);
+        simulation.force('link').links(filteredLinks);
+        simulation.alpha(1).restart();
+
+        simulation.on('tick', () => {
+          link.attr('x1', d => d.source.x)
+              .attr('y1', d => d.source.y)
+              .attr('x2', d => d.target.x)
+              .attr('y2', d => d.target.y);
+          node.attr('cx', d => d.x)
+              .attr('cy', d => d.y);
+          label.attr('x', d => d.x + 14 / currentZoom)
+               .attr('y', d => d.y + 5 / currentZoom);
+        });
+
+        updateNodeSizes();
+      } catch (error) {
+        console.error('Error updating graph:', error);
+      } finally {
+        loading.style.display = 'none';
+      }
+    }
+
+    svg.on('click', () => {
+      infoPanel.style.display = 'none';
+    });
+
+    hideUnconnectedCheckbox.addEventListener('change', updateGraph);
+    updateGraph();
+  </script>
+</body>
+</html>

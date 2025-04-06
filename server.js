@@ -23,6 +23,18 @@ const SANDBOX_DIR = path.join(__dirname, 'sandbox/ART/sandbox');
 
 fs.mkdir(SANDBOX_DIR, { recursive: true }).catch(err => console.error('Failed to create sandbox:', err));
 
+app.post('/sandbox/mkdir', async (req, res) => {
+  const { path: dirPath } = req.body;
+  if (!dirPath) return res.status(400).json({ error: 'Path is required' });
+  try {
+    const fullPath = path.join(SANDBOX_DIR, dirPath);
+    await fs.mkdir(fullPath, { recursive: true });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.post('/sandbox/write', async (req, res) => {
   const { path: filePath, content } = req.body;
   if (!filePath) return res.status(400).json({ error: 'Path is required' });

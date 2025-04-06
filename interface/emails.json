@@ -1,11 +1,201 @@
 [
   {
-    "id": "<iTTcELaF4ePs3Teft9aXQQ@notifications.google.com>",
-    "subject": "Google heeft je instellingen geüpdatet",
-    "sender": "\"Google\" <no-reply@accounts.google.com>",
-    "preview": "[image: Google]\nHallo ART, we hebben je instelling...",
-    "body": "[image: Google]\nHallo ART, we hebben je instellingen geüpdatet\n\n\nmailto.artai@gmail.com\nGoogle heeft wijzigingen aangebracht om een veiligere online omgeving te\nbieden aan mensen van wie niet is bevestigd dat ze 18 jaar of ouder zijn\nOntdek het zelf\n<https://accounts.google.com/AccountChooser?Email=mailto.artai@gmail.com&continue=https://myaccount.google.com/check-settings?cfc%3D1%26rfn%3D1743402221757>\n\n\nSafeSearch staat aan\nGoogle kan expliciete content (zoals pornografie) verbergen in je\nzoekresultaten\n\nGepersonaliseerde advertenties staan uit\nGoogle laat je geen gepersonaliseerde advertenties zien\n\nLocatiegeschiedenis staat uit\nDe exacte locatie van je apparaten wordt niet automatisch opgeslagen in je\nlocatiegeschiedenis\n\nBen je 18 jaar of ouder?\nBevestig je leeftijd\n<https://accounts.google.com/AccountChooser?Email=mailto.artai@gmail.com&continue=https://myaccount.google.com/age-verification?acl%3D2%26p%3D7%26rfn%3D1743402221757>\nen kies de instellingen die geschikt zijn voor jou\nJe krijgt deze e-mail om je te informeren over belangrijke wijzigingen in\nje Google-account en -services.\n© 2025 Google Ireland Ltd., Gordon House, Barrow Street, Dublin 4, Ireland\n",
-    "date": "31/3/2025, 08:23:41",
+    "id": "<67eb9700a837c_f881c10205353d@github-lowworker-1da7760.ac4-iad.github.net.mail>",
+    "subject": "[GitHub] Your Dependabot alerts for the week of Mar 25 - Apr 1",
+    "sender": "\"GitHub\" <noreply@github.com>",
+    "preview": "Dependabot alerts on GitHub\n\nDependabot alerts thi...",
+    "body": "Dependabot alerts on GitHub\n\nDependabot alerts this week Mar 25 - Apr  1\n-------------------\n\nr0nw4lk3r31’s personal account\n---------------------------------------------------\n1. https://github.com/r0nw4lk3r31/artful\n\n  nanoid dependency\n  ------------------------------------------------\n  Vulnerable versions: < 3.3.8\n  Upgrade to: 3.3.8\n  Defined in: package-lock.json\n  Vulnerabilities:  CVE-2024-55565 (Moderate severity) \n\n\n  vite dependency\n  ------------------------------------------------\n  Vulnerable versions: >= 5.0.0, <= 5.4.11\n  Upgrade to: 5.4.12\n  Defined in: package-lock.json\n  Vulnerabilities:  CVE-2025-24010 (Moderate severity)  CVE-2025-30208 (Moderate severity) \n\n\n  esbuild dependency\n  ------------------------------------------------\n  Vulnerable versions: <= 0.24.2\n  Upgrade to: 0.25.0\n  Defined in: package-lock.json\n  Vulnerabilities:  GHSA-67mh-4wv8-2f99 (Moderate severity) \n\n\n  @babel/runtime dependency\n  ------------------------------------------------\n  Vulnerable versions: < 7.26.10\n  Upgrade to: 7.26.10\n  Defined in: package-lock.json\n  Vulnerabilities:  CVE-2025-27789 (Moderate severity) \n\n\n  View all vulnerable dependencies:\n  https://github.com/r0nw4lk3r31/artful/security/dependabot\n\n\nChange how you receive security alert emails in your notification preferences: https://github.com/settings/notifications#vulnerability-alerts-heading\n\nChange your email preferences: https://github.com/settings/emails\nUnsubscribe from this email: https://github.com/email/unsubscribe?token=BQQIAYX4MT6U3RUEVJGD7GTJZTFIBANENZQW2ZNNOZ2WY3TFOJQWE2LMNF2HS\n\nGitHub, Inc. 88 Colin P Kelly Jr Street, San Francisco, CA 94107\n",
+    "date": "1/4/2025, 09:34:24",
+    "read": true,
+    "folder": "inbox"
+  },
+  {
+    "id": "<20250401115033.e11a1e3d210aaf06@mail.manus.im>",
+    "subject": "Your Manus invitation codes are ready!",
+    "sender": "\"Manus Team\" <noreply@mail.manus.im>",
+    "preview": "[https://d2jp9jrquxfve7.cloudfront.net/email/manus...",
+    "body": "[https://d2jp9jrquxfve7.cloudfront.net/email/manus.png]\n\nYou've received 2 invitation codes!\n\nThank you for supporting Manus! We've prepared 2 exclusive invitation codes for\nyou to share with your friends. Invite them to experience Manus today!\n\nView my invitation codes\n[https://email.mail.manus.im/c/eJw8zk1qwzAQxfHTSDub-ZAUbbQoFEOhlxhHcjMQW8ae5PylhWT9eD_-taQEENm3gpfAETIx-1vJC0mbOaR0iTNSzYlqXSBHyHnGFL0WAooQABEjMI8NUbBxJQSRBZILsIrex1W2xznq6u_lZrafjj8cTY6m1-Bokn13PPW9bV_bU01M-_atpzn-RH-UP8f6KIeJugA__-61r97K42zHoO_TcO21Da8y_yz0GwAA__-hTkNs]\n\n© 2025 Manus AI\n\n[https://email.mail.manus.im/o/eJw0zTuugzAQQNHV4A5rPv68V3gxAx6SkWIsgWH9USKlvLrFqSUlgMhOC-bAEf6I2T0LbQK8sGoW2pagVBdOoDknTPJf2VkhoAgBEDECs1dEQeVKCCIbpClAE3v5Jvt1emvuKJ8e3csxxKYAj-9fe3OjXKces-23DRnW93ntVeef4O5C7wAAAP__UvoxYg]",
+    "date": "1/4/2025, 13:50:33",
+    "read": true,
+    "folder": "inbox"
+  },
+  {
+    "id": "<20250401180216.a2c38985c607c667@cioeu109333.lovable.dev>",
+    "subject": "Get 10x value from Lovable by mastering prompting (I/II)",
+    "sender": "\"Lovable\" <hi@lovable.dev>",
+    "preview": "Hey there,\nEver wondered why experienced users mak...",
+    "body": "Hey there,\nEver wondered why experienced users make Lovable look so easy? How they prompt makes (almost) all the difference.\n\nHere's how to get 10x better results from Lovable:\n* Give Lovable context on the problem you are trying to solve\n* Break your asks down into smaller parts\n* Be specific about what you want to change, and what you want to change it to\n* Include images in your prompts to guide Lovable more precisely\nReady to try these techniques in Lovable? ( https://lovable.dev/ )\n\nTo dive deeper,\ncheck out this video we created with our friend Mark on how to prompt Lovable correctly:\n\n( https://www.youtube.com/watch?v=IqWfKj4mUIo&utm_source=marketinglifecycle&utm_medium=email1nontech&utm_campaign=creativeabtest )\n\nCheers,\nAnton\n\nEmail footer image\n\nTurn ideas into lovable products at Lovable.dev ( https://lovable.dev )\n\nUnsubscribe ( http://track.customer.io/unsubscribe/dgTmjgoAAMmMoAPIjKADAZXyhK8BwhAZgMq76LSEEw== )",
+    "date": "1/4/2025, 20:02:16",
+    "read": true,
+    "folder": "inbox"
+  },
+  {
+    "id": "<CA+vab7KszVJ3rygMxuHMEa0=YzSAYerJ5XMons=cbUsYxqx7rg@mail.gmail.com>",
+    "subject": "Post van PyQuant News 🐍 (@pyquantnews)",
+    "sender": "\"Ron Walker\" <r0nnw4lk3r@gmail.com>",
+    "preview": "PyQuant News 🐍 (@pyquantnews) heeft om 2:51 p.m. ...",
+    "body": "PyQuant News 🐍 (@pyquantnews) heeft om 2:51 p.m. on di, apr 01, 2025\ngeplaatst:\nA new Python library for algorithmic trading.\n\nIt's called TensorTrade: An open-source Python framework for trading using\nReinforcement Learning (AI).\n\nHere's the link on GitHub: https://t.co/Uu15tuvx3t\n(\nhttps://x.com/pyquantnews/status/1907053237439430753?t=ccns-2yJKVCM7JAojkVqIA&s=03\n)\n",
+    "date": "2/4/2025, 09:35:08",
+    "read": true,
+    "folder": "inbox"
+  },
+  {
+    "id": "<CA+vab7LX5t82_z8_hRaFpRaVu1fR7Dx25J1-dLADo-4vPcx6Hg@mail.gmail.com>",
+    "subject": "Post van AK (@_akhaliq)",
+    "sender": "\"Ron Walker\" <r0nnw4lk3r@gmail.com>",
+    "preview": "AK (@_akhaliq) heeft om 8:35 p.m. on wo, apr 02, 2...",
+    "body": "AK (@_akhaliq) heeft om 8:35 p.m. on wo, apr 02, 2025 geplaatst:\nvibe coding AI apps for free has never been easier\n\n100% open source app, DeepSite on Hugging Face https://t.co/0uROlaLzcP\n(\nhttps://x.com/_akhaliq/status/1907502083231670300?t=PMssa6qf1T1s5_5Yqh9h3A&s=03\n)\n",
+    "date": "3/4/2025, 17:24:50",
+    "read": true,
+    "folder": "inbox"
+  },
+  {
+    "id": "<CALScJqZ4KtS4PNt4_PHaqsh=2vMw4KBCbtpWJyQcUXYeUQwzjQ@mail.gmail.com>",
+    "subject": "Scrnsht",
+    "sender": "\"Ronnie Spoelstra\" <ronnspoelstra@gmail.com>",
+    "preview": "A JavaScript error occurred in the main process\n\nU...",
+    "body": "A JavaScript error occurred in the main process\n\nUncaught Exception:\n\nError [ERR_REQUIRE_ESM]: require() of ES Module\n\nC:\\Users\\r0nw4\\ARTlab\\ART\\interface\\main.js from\n\ns\\r0nw4\\ARTlab\\ART\\node_modules\\electron\\dist\\resources\\default_app.asar\\main.js\nnot supported.\n\nC:\\Users\\r0nw4\\ARTlab\\ART\\interface\\main.js is treated as an ES module file\nas it is a .js file whose nearest parent package.json contains \"type\":\n\"module\" which declares all.js files in that package scope as ES modules.\n\nInstead rename C:\\Users\\r0nw4\\ARTlab\\ART\\interface\\main.js to end in .cjs,\nchange the requiring code to use dynamic import() which is available in all\nCommonJS modules, or change \"type\": \"module\" to \"type\": \"commonjs\" in\nC:\\Users\\r0nw4\\ARTlab\\ART\\package.json to treat all .js files as CommonJS\n(using.mjs for all ES modules instead).\n\nat f._load (node:electron/js2c/asar_bundle:2:13330)\n\nat loadApplicationPackage\n\n(C:\\Users\\r0nw4\\ARTlab\\ART\\node_modules\\electron\\dist\\resources\\default_app.asar\\...:16)\n\nat Object.<anonymous>\n\n(C:\\Users\\r0nw4\\ARTlab\\ART\\node_modules\\electron\\dist\\resources\\default_app.asar\\m...:9)\n\nat f._load (node:electron/js2c/asar_bundle:2:13330)\n\nat node:electron/js2c/browser_init:2:115640\n\nat node:electron/js2c/browser_init:2:115843\n\nat node:electron/js2c/browser_init:2:115847\n\nat f. load (node electron/js2c/asar_bundle:2:13330)\n",
+    "date": "4/4/2025, 11:19:22",
+    "read": true,
+    "folder": "inbox"
+  },
+  {
+    "id": "<20250403180219.c02c13706d9f8dd7@cioeu109333.lovable.dev>",
+    "subject": "Reminder: The right prompts get you 10x better results in Lovable",
+    "sender": "\"Lovable\" <hi@lovable.dev>",
+    "preview": "Hey there,\nEver wondered why experienced users mak...",
+    "body": "Hey there,\nEver wondered why experienced users make Lovable look so easy? How they prompt makes (almost) all the difference.\n\nHere's how to get 10x better results from Lovable:\n* Give Lovable context on the problem you are trying to solve\n* Break your asks down into smaller parts\n* Be specific about what you want to change, and what you want to change it to\n* Include images in your prompts to guide Lovable more precisely\nReady to try these techniques in Lovable? ( https://lovable.dev/ )\n\nTo dive deeper, check out this video we created with our friend\nMark on how to prompt Lovable correctly:\n\n( https://www.youtube.com/watch?v=IqWfKj4mUIo&utm_source=marketinglifecycle&utm_medium=email1nontech&utm_campaign=creativeabtest )\n\nCheers, Anton\n\nEmail footer image\n\nTurn ideas into lovable products at Lovable.dev ( https://lovable.dev )\n\nUnsubscribe ( http://track.customer.io/unsubscribe/dgTmjgoAAMmMoAPIjKADAZX80XEAaANuFzeuLmVzLA== )",
+    "date": "3/4/2025, 20:02:19",
+    "read": true,
+    "folder": "inbox"
+  },
+  {
+    "id": "<20250402222147.fffe49abaed09f78@cioeu109333.lovable.dev>",
+    "subject": "Lovable Pulse — Build competition winners and Lovable Livesteam",
+    "sender": "\"Lovable\" <hi@lovable.dev>",
+    "preview": "***********************************************\nLo...",
+    "body": "***********************************************\nLovable Pulse —\nBuild competition winners and Lovable Livesteam\n***********************************************\n\nHey 👋\n\nHere are some community news from Lovable:\n\n--------------------------------------------\nLovable Livestream - Building a landing page\n--------------------------------------------\n\nLovable Livestream - Building a $10k landing page\n\nUs and Harry will build a high-converting, fully polished landing page live — complete with pro-level design, copy, interactions, and more.\n\nRegister here: https://lu.ma/j1if8m4m\n\n​See you there!\n\n-----------------------------------------------------------\nAnnouncing the build competition winners – $40k in prizes\n-----------------------------------------------------------\n\nAnnouncing the build competition winners – $40k in prizes\n\nWe organized a build competition with Anthropic, Supabase, Sentry, Elevenlabs and EQT Ventures.\n\nThese were the winning submissions:\n\n* Overall Winner - $10,000 cash\nStardust Analytics ( https://stardust-insights.lovable.app/ ) by Rasmus Sanne, Matt Bergström and Marcus Pousette\n* Best Startup - $5,000 cash\nSkillStep ( https://skillstep.lovable.app/ ) by Dilnoza Shaumarova and Christophe Debauve\n* Best Something 2.0 - $5,000 cash\nV.P.R.O.M.I.S.E. All-in-One Watch Party Learning ( https://vpromise.lovable.app/ ) by Ngoc Anh Nhu\n* Best Website - $5,000 cash\nDream Catcher ( https://slumber-tale.lovable.app/ ) by Abb Kapoor and Ian Cross\n* People’s Choice Award - $5,000 cash\nAccessAI ( https://voice-embeddable-widget.lovable.app/ ) by Skyler Talley\n\nWe were blown away by the apps people were able to build in just 24h!\n\nThat's all for this time.\n\nBest,\n\nThe Lovable Team\n\nLovable Logo\n\nTurn ideas into Lovable products at Lovable.dev\n\nStart building ( https://lovable.dev/dashboard )\n\n𝕏 Twitter ( https://x.com/lovable_dev )\n\nLinkedIn ( https://www.linkedin.com/company/lovable-dev )\n\nYouTube ( https://www.youtube.com/@lovable-labs )\n\nDiscord ( https://discord.gg/cSGYDCAx )\n\nUnsubscribe ( http://track.customer.io/unsubscribe/dgTmjgoDAMmMoAPIjKADAZX4eYXKkaKleJzQml3Kiw== )",
+    "date": "3/4/2025, 00:21:47",
+    "read": true,
+    "folder": "inbox"
+  },
+  {
+    "id": "<115d1888-d755-4c05-b336-c3b82d0d2638@smtp-relay.sendinblue.com>",
+    "subject": "Welcome to Argil - make sure to join our community",
+    "sender": "\"Laodis at Argil\" <support@argil.ai>",
+    "preview": "Hey there,\n\n \n\nThanks for joining Argil, we're exc...",
+    "body": "Hey there,\n\n \n\nThanks for joining Argil, we're excited for you to use video at scale 😍\n\nHere's all the [doc you need to get started.](https://docs.argil.ai/resources/introduction)\n\n \n\nThe next steps for you are:\n\n\n- [Train your avatar](https://docs.argil.ai/resources/training-tips) if you feel like it (here's how to do it) \n- Or generate your first video with one of our [educational & UGC avatars](https://app.argil.ai/avatars)  \n \n\nFinally, make sure to join our [discord channel for feedback](https://discord.gg/m8yBkuZt6Y) & community. \n\n\nCheers,\n\n \n\nLaodis, \nCEO\n\n",
+    "date": "4/4/2025, 15:27:53",
+    "read": true,
+    "folder": "inbox"
+  },
+  {
+    "id": "<0101019603400357-f205491e-9ab8-4425-8192-2fb222d3b169-000000@us-west-2.amazonses.com>",
+    "subject": "Your Cline Bot Inc. receipt [#1855-8874]",
+    "sender": "\"Cline Bot Inc.\" <receipts+acct_1QjsicJvJ1E14BGM@stripe.com>",
+    "preview": "Receipt from Cline Bot Inc. Receipt #1855-8874\nAmo...",
+    "body": "Receipt from Cline Bot Inc. Receipt #1855-8874\nAmount paid\n$5.60\n\nDate paid\nApr 4, 2025, 5:00:46 PM\n\nPayment method\nLink\n\nSummary\n\n-   - Payment to Cline Bot Inc. : $5.60\n\n- Amount paid : $5.60\n\n\nIf you have any questions, contact us at support@cline.bot (support@cline.bot).\nSomething wrong with the email? View in browser: (https://dashboard.stripe.com/receipts/payment/CAcQARoXChVhY2N0XzFRanNpY0p2SjFFMTRCR00or-XBvwYyBuch2KGJXDovFn-E9OecVPyFWG_UuSWXdxMtChSNUQT2p0F3MRmFRPoy0ffy0hhbqeDlY0F4-Sg)\n\nYou're receiving this email because you made a purchase at Cline Bot Inc., which partners with Stripe (https://stripe.com/) to provide invoicing and payment processing.",
+    "date": "5/4/2025, 02:00:48",
+    "read": true,
+    "folder": "inbox"
+  },
+  {
+    "id": "<CALScJqY4XrSijh3aigcHPE0bDfP+No2FPdETzah5cgbDpxTi3w@mail.gmail.com>",
+    "subject": "Post van Lior⚡ (@LiorOnAI)",
+    "sender": "\"Ronnie Spoelstra\" <ronnspoelstra@gmail.com>",
+    "preview": "Lior⚡ (@LiorOnAI) heeft om 4:00 p.m. on do, apr 03...",
+    "body": "Lior⚡ (@LiorOnAI) heeft om 4:00 p.m. on do, apr 03, 2025 geplaatst:\nGame changer for scraping.\n\nThis repo lets you easily scrape web pages and have the output in\nLLM-friendly formats (JSON, cleaned HTML, markdown).\n\n• Supports crawling multiple URLs simultaneously\n• Extracts and returns all media tags (Images, Audio, and Video)\n• Extracts all https://t.co/bVx1OUeEIB\n(\nhttps://x.com/LiorOnAI/status/1907795230016856550?t=4sEIFPHGY_aQPB670hDIKA&s=03\n)\n",
+    "date": "5/4/2025, 13:53:30",
+    "read": true,
+    "folder": "inbox"
+  },
+  {
+    "id": "<CALScJqaNo6M0YVadc9ZJZ6u=Lob88PHESofPxQHeaB8fhjcVaA@mail.gmail.com>",
+    "subject": "Windsurf ai",
+    "sender": "\"Ronnie Spoelstra\" <ronnspoelstra@gmail.com>",
+    "preview": "https://windsurf.com/editor?s=03\n",
+    "body": "https://windsurf.com/editor?s=03\n",
+    "date": "5/4/2025, 19:47:47",
+    "read": true,
+    "folder": "inbox"
+  },
+  {
+    "id": "<CALScJqZb3HgaPYe-gfjLru2JVattDBtHr5h6GWBw2A+ra+0b3Q@mail.gmail.com>",
+    "subject": "Cursor - The AI Code Editor",
+    "sender": "\"Ronnie Spoelstra\" <ronnspoelstra@gmail.com>",
+    "preview": "https://www.cursor.com/\n",
+    "body": "https://www.cursor.com/\n",
+    "date": "5/4/2025, 19:48:35",
+    "read": true,
+    "folder": "inbox"
+  },
+  {
+    "id": "<CALScJqazc=rMzJ5LahCxq3rUuoXmC3_dOTxMsR2wjbKVPbVprw@mail.gmail.com>",
+    "subject": "Simular - Computer Use Agents & Workflow Automation",
+    "sender": "\"Ronnie Spoelstra\" <ronnspoelstra@gmail.com>",
+    "preview": "https://www.simular.ai/\n",
+    "body": "https://www.simular.ai/\n",
+    "date": "6/4/2025, 04:34:11",
+    "read": true,
+    "folder": "inbox"
+  },
+  {
+    "id": "<CALScJqY_a7_gMMzqTAShKpPitJqWMfWrTwv8ZBWsQfZKVFo4Ew@mail.gmail.com>",
+    "subject": "Post van GitHub (@github)",
+    "sender": "\"Ronnie Spoelstra\" <ronnspoelstra@gmail.com>",
+    "preview": "GitHub (@github) heeft om 10:17 p.m. on vr, apr 04...",
+    "body": "GitHub (@github) heeft om 10:17 p.m. on vr, apr 04, 2025 geplaatst:\n📣 This just in...\n\nThe *open source* and official GitHub MCP Server is here 🤩\nhttps://t.co/CRMBy75Ytm\n(\nhttps://x.com/github/status/1908252589424337278?t=3HxFEEXKpEtRLJHtGOBamQ&s=03\n)\n",
+    "date": "5/4/2025, 19:50:36",
+    "read": true,
+    "folder": "inbox"
+  },
+  {
+    "id": "<CALScJqZj-NCBO5DB-231_sgRHCJk8PYK=5oN1shZqQW_7XrEKA@mail.gmail.com>",
+    "subject": "Post van Pierce Boggan (@pierceboggan)",
+    "sender": "\"Ronnie Spoelstra\" <ronnspoelstra@gmail.com>",
+    "preview": "Pierce Boggan (@pierceboggan) heeft om 7:54 p.m. o...",
+    "body": "Pierce Boggan (@pierceboggan) heeft om 7:54 p.m. on vr, apr 04, 2025\ngeplaatst:\nVS Code stable 1.99 is out, and with some big improvements:\n\n- Agent mode available in stable (chat.agent.enabled setting)\n- Model Context Protocol support\n- Unified chat view with ask, edit, and agent modes\n- Next edit suggestions general availability\n- Bring your own key\n(\nhttps://x.com/pierceboggan/status/1908216505747333184?t=SVOKZOnGRIVLOPlx-7ByZA&s=03\n)\n",
+    "date": "5/4/2025, 19:49:48",
+    "read": true,
+    "folder": "inbox"
+  },
+  {
+    "id": "<0101019604cd1297-b32be6ae-3042-4ca4-9514-acf3b7d65536-000000@us-west-2.amazonses.com>",
+    "subject": "Your Cline Bot Inc. receipt [#1623-9502]",
+    "sender": "\"Cline Bot Inc.\" <receipts+acct_1QjsicJvJ1E14BGM@stripe.com>",
+    "preview": "Receipt from Cline Bot Inc. Receipt #1623-9502\nAmo...",
+    "body": "Receipt from Cline Bot Inc. Receipt #1623-9502\nAmount paid\n$10.85\n\nDate paid\nApr 5, 2025, 12:14:28 AM\n\nPayment method\nLink\n\nSummary\n\n-   - Payment to Cline Bot Inc. : $10.85\n\n- Amount paid : $10.85\n\n\nIf you have any questions, contact us at support@cline.bot (support@cline.bot).\nSomething wrong with the email? View in browser: (https://dashboard.stripe.com/receipts/payment/CAcQARoXChVhY2N0XzFRanNpY0p2SjFFMTRCR00o1bDDvwYyBrLP0_vUGzovFl6Vx2vtHnA9N2NWxuqQwv-TJw5sv59SZpUsUH-WS3luM4cvD7-ZFyuWl9aA2Dg)\n\nYou're receiving this email because you made a purchase at Cline Bot Inc., which partners with Stripe (https://stripe.com/) to provide invoicing and payment processing.",
+    "date": "5/4/2025, 09:14:30",
+    "read": true,
+    "folder": "inbox"
+  },
+  {
+    "id": "<ad5f4bd272da48ad13b215eb5.0d97ba6293.20250406082115.ae521f0091.c5a7c9c1@mail176.suw12.mcsv.net>",
+    "subject": "Welcome to Simular!",
+    "sender": "\"Simular\" <ang@simular.ai>",
+    "preview": "A warm welcome\n\nhttp://www.simular.ai\n\n\n** Hello f...",
+    "body": "A warm welcome\n\nhttp://www.simular.ai\n\n\n** Hello from Simular\n------------------------------------------------------------\n\n\n** Welcome , glad you're here!\n------------------------------------------------------------\n\nWe're thrilled to have you join the Simular community. Our journey is all about bringing innovation and excitement to your doorstep. Your participation means a lot to us, and we're eager to see where this connection leads. Thank you for signing up and becoming a new member of our community.\n\n\n** Don't miss the world’s first agentic browser that can browse the Internet on your behalf.\n------------------------------------------------------------\nhttps://www.simular.ai\n\nCopyright (C) 2025 Simular. All rights reserved.\nYou are receiving this email because you opted in via our website.\nOur mailing address is:\nSimular\n55 E 3rd Ave\nSan Mateo, CA 94401-4010\nUSA\nWant to change how you receive these emails?\nYou can update your preferences (https://simular.us12.list-manage.com/profile?u=ad5f4bd272da48ad13b215eb5&id=3a04aeea98&e=0d97ba6293&c=ae521f0091) or unsubscribe (https://simular.us12.list-manage.com/unsubscribe?u=ad5f4bd272da48ad13b215eb5&id=3a04aeea98&t=b&e=0d97ba6293&c=ae521f0091)\n\nView this email in your browser (https://us12.campaign-archive.com/?e=0d97ba6293&i=*|ITERATION_UNIQUE_ID|*&u=ad5f4bd272da48ad13b215eb5&id=ae521f0091)",
+    "date": "6/4/2025, 10:21:21",
+    "read": true,
+    "folder": "inbox"
+  },
+  {
+    "id": "<010101960516982a-feaf4488-e24a-4ec4-8589-8b1e0cda3d3c-000000@us-west-2.amazonses.com>",
+    "subject": "Your Cline Bot Inc. receipt [#1407-8816]",
+    "sender": "\"Cline Bot Inc.\" <receipts+acct_1QjsicJvJ1E14BGM@stripe.com>",
+    "preview": "Receipt from Cline Bot Inc. Receipt #1407-8816\nAmo...",
+    "body": "Receipt from Cline Bot Inc. Receipt #1407-8816\nAmount paid\n$2.45\n\nDate paid\nApr 5, 2025, 1:34:44 AM\n\nPayment method\nLink\n\nSummary\n\n-   - Payment to Cline Bot Inc. : $2.45\n\n- Amount paid : $2.45\n\n\nIf you have any questions, contact us at support@cline.bot (support@cline.bot).\nSomething wrong with the email? View in browser: (https://dashboard.stripe.com/receipts/payment/CAcQARoXChVhY2N0XzFRanNpY0p2SjFFMTRCR00op9bDvwYyBsrOXRb8VjovFkmfpdR24fiJpG6065Z-5cBMdte13EgZ2Lgz8H1LoggjzOvBig1a3Nzm9MN3jI0)\n\nYou're receiving this email because you made a purchase at Cline Bot Inc., which partners with Stripe (https://stripe.com/) to provide invoicing and payment processing.",
+    "date": "5/4/2025, 10:34:49",
+    "read": true,
+    "folder": "inbox"
+  },
+  {
+    "id": "<4v56PIGnRg-oL_Y1oDbFIQ@geopod-ismtpd-28>",
+    "subject": "Welcome to Unwind AI!",
+    "sender": "\"Unwind AI\" <unwindai@mail.beehiiv.com>",
+    "preview": "### **Hey there! ****Welcome to the Unwind AI comm...",
+    "body": "### **Hey there! ****Welcome to the Unwind AI community ****🎉**\n\n#### We’re thrilled to have you on board!\n\nHere’s a quick look at what you can expect from Unwind AI:\n\n1. **Daily AI Newsletter:** Get a 3-minute daily read covering what's new and notable in AI - from frameworks and tools to models and implementation strategies. No fluff, just technical insights you can actually use.\n\n2. **In-Depth AI Tutorials:** Step-by-step tutorials to build LLM applications with AI agents, RAG, and more are regularly [published here](https://link.mail.beehiiv.com/ss/c/u001.32lCrWXoNSqwta-4ovFOQNpXb-ZyMe0tLTLZUnKzd4JCBNAPTtHVi8fvNr_WlJyIflAgN666621I0PYlhcsD4Q/4fe/gWUtF4SfTJ64eCw1lauWAA/t0/h001.vEPU56xLOATk5eOyK97tHWxAjtcTU4TDIckrAasAJrM Each tutorial breaks down the code into clear explanations which you can easily follow and implement.\n\n3. **Open-source Resources:** Check out our GitHub repo **[Awesome LLM Apps](https://link.mail.beehiiv.com/ss/c/u001.DvxwF2CQ33YCClywbmuOaNiLOAega5x96OuvZB0gqN2wf8RqQhrF9FW3Ft4CnoHfYKrJ-V9GO3wDSeeiU0fZsw/4fe/gWUtF4SfTJ64eCw1lauWAA/t1/h001.6iW2dkS54eqFsxB7S4xTmFxz3N8ROiwvH_CrCc2Ulg4 - a growing collection of implementation examples using various frameworks. Build your own applications using our tested patterns, or contribute your own implementations to help fellow developers.\n\nWe focus on delivering practical, implementation-focused content that helps you build better AI systems. No hype, no fluff - just actionable technical insights for developers.\n\nCheck out our GitHub repo **[Awesome LLM Apps](https://link.mail.beehiiv.com/ss/c/u001.DvxwF2CQ33YCClywbmuOaNiLOAega5x96OuvZB0gqN2wf8RqQhrF9FW3Ft4CnoHfYKrJ-V9GO3wDSeeiU0fZsw/4fe/gWUtF4SfTJ64eCw1lauWAA/t2/h001.HJ-MlYLHVQ0uq5bznz9hr6_frnZv8kLhP_vFN3P-ybU to build the most awesome LLM apps with RAG and AI agents for interacting with various data sources like GitHub, Gmail, PDFs, and YouTube videos, and automate workflows.\n\nGot questions? Want to suggest something we should cover? Or just want to say hi? Reply to this email - we love hearing from our community!\n\nAlso, please refer Unwind AI to a friend (or maybe even 10).\n\n##### **Some housekeeping…**\n\nIf you can’t find the newsletter, check your spam folder. And please mark this address as ‘not spam.’ If the newsletter isn’t in your spam folder, you should look in the Promotions tab.\n\nYou can always see everything on **[Unwind AI’s website](https://link.mail.beehiiv.com/ss/c/u001.32lCrWXoNSqwta-4ovFOQNpXb-ZyMe0tLTLZUnKzd4JWWa2wnAJYhx59KzrtjQRU/4fe/gWUtF4SfTJ64eCw1lauWAA/t3/h001.A8dH4xlGM-vzBfuTvf-vK_JWkdgyv2lBJzYKnhBf5Xk\n\nThanks a lot!\n\n\n",
+    "date": "5/4/2025, 19:47:50",
     "read": true,
     "folder": "inbox"
   },
@@ -80,122 +270,12 @@
     "folder": "inbox"
   },
   {
-    "id": "<67eb9700a837c_f881c10205353d@github-lowworker-1da7760.ac4-iad.github.net.mail>",
-    "subject": "[GitHub] Your Dependabot alerts for the week of Mar 25 - Apr 1",
-    "sender": "\"GitHub\" <noreply@github.com>",
-    "preview": "Dependabot alerts on GitHub\n\nDependabot alerts thi...",
-    "body": "Dependabot alerts on GitHub\n\nDependabot alerts this week Mar 25 - Apr  1\n-------------------\n\nr0nw4lk3r31’s personal account\n---------------------------------------------------\n1. https://github.com/r0nw4lk3r31/artful\n\n  nanoid dependency\n  ------------------------------------------------\n  Vulnerable versions: < 3.3.8\n  Upgrade to: 3.3.8\n  Defined in: package-lock.json\n  Vulnerabilities:  CVE-2024-55565 (Moderate severity) \n\n\n  vite dependency\n  ------------------------------------------------\n  Vulnerable versions: >= 5.0.0, <= 5.4.11\n  Upgrade to: 5.4.12\n  Defined in: package-lock.json\n  Vulnerabilities:  CVE-2025-24010 (Moderate severity)  CVE-2025-30208 (Moderate severity) \n\n\n  esbuild dependency\n  ------------------------------------------------\n  Vulnerable versions: <= 0.24.2\n  Upgrade to: 0.25.0\n  Defined in: package-lock.json\n  Vulnerabilities:  GHSA-67mh-4wv8-2f99 (Moderate severity) \n\n\n  @babel/runtime dependency\n  ------------------------------------------------\n  Vulnerable versions: < 7.26.10\n  Upgrade to: 7.26.10\n  Defined in: package-lock.json\n  Vulnerabilities:  CVE-2025-27789 (Moderate severity) \n\n\n  View all vulnerable dependencies:\n  https://github.com/r0nw4lk3r31/artful/security/dependabot\n\n\nChange how you receive security alert emails in your notification preferences: https://github.com/settings/notifications#vulnerability-alerts-heading\n\nChange your email preferences: https://github.com/settings/emails\nUnsubscribe from this email: https://github.com/email/unsubscribe?token=BQQIAYX4MT6U3RUEVJGD7GTJZTFIBANENZQW2ZNNOZ2WY3TFOJQWE2LMNF2HS\n\nGitHub, Inc. 88 Colin P Kelly Jr Street, San Francisco, CA 94107\n",
-    "date": "1/4/2025, 09:34:24",
-    "read": true,
-    "folder": "inbox"
-  },
-  {
-    "id": "<CA+vab7KszVJ3rygMxuHMEa0=YzSAYerJ5XMons=cbUsYxqx7rg@mail.gmail.com>",
-    "subject": "Post van PyQuant News 🐍 (@pyquantnews)",
-    "sender": "\"Ron Walker\" <r0nnw4lk3r@gmail.com>",
-    "preview": "PyQuant News 🐍 (@pyquantnews) heeft om 2:51 p.m. ...",
-    "body": "PyQuant News 🐍 (@pyquantnews) heeft om 2:51 p.m. on di, apr 01, 2025\ngeplaatst:\nA new Python library for algorithmic trading.\n\nIt's called TensorTrade: An open-source Python framework for trading using\nReinforcement Learning (AI).\n\nHere's the link on GitHub: https://t.co/Uu15tuvx3t\n(\nhttps://x.com/pyquantnews/status/1907053237439430753?t=ccns-2yJKVCM7JAojkVqIA&s=03\n)\n",
-    "date": "2/4/2025, 09:35:08",
-    "read": true,
-    "folder": "inbox"
-  },
-  {
-    "id": "<20250401180216.a2c38985c607c667@cioeu109333.lovable.dev>",
-    "subject": "Get 10x value from Lovable by mastering prompting (I/II)",
-    "sender": "\"Lovable\" <hi@lovable.dev>",
-    "preview": "Hey there,\nEver wondered why experienced users mak...",
-    "body": "Hey there,\nEver wondered why experienced users make Lovable look so easy? How they prompt makes (almost) all the difference.\n\nHere's how to get 10x better results from Lovable:\n* Give Lovable context on the problem you are trying to solve\n* Break your asks down into smaller parts\n* Be specific about what you want to change, and what you want to change it to\n* Include images in your prompts to guide Lovable more precisely\nReady to try these techniques in Lovable? ( https://lovable.dev/ )\n\nTo dive deeper,\ncheck out this video we created with our friend Mark on how to prompt Lovable correctly:\n\n( https://www.youtube.com/watch?v=IqWfKj4mUIo&utm_source=marketinglifecycle&utm_medium=email1nontech&utm_campaign=creativeabtest )\n\nCheers,\nAnton\n\nEmail footer image\n\nTurn ideas into lovable products at Lovable.dev ( https://lovable.dev )\n\nUnsubscribe ( http://track.customer.io/unsubscribe/dgTmjgoAAMmMoAPIjKADAZXyhK8BwhAZgMq76LSEEw== )",
-    "date": "1/4/2025, 20:02:16",
-    "read": true,
-    "folder": "inbox"
-  },
-  {
-    "id": "<CA+vab7LX5t82_z8_hRaFpRaVu1fR7Dx25J1-dLADo-4vPcx6Hg@mail.gmail.com>",
-    "subject": "Post van AK (@_akhaliq)",
-    "sender": "\"Ron Walker\" <r0nnw4lk3r@gmail.com>",
-    "preview": "AK (@_akhaliq) heeft om 8:35 p.m. on wo, apr 02, 2...",
-    "body": "AK (@_akhaliq) heeft om 8:35 p.m. on wo, apr 02, 2025 geplaatst:\nvibe coding AI apps for free has never been easier\n\n100% open source app, DeepSite on Hugging Face https://t.co/0uROlaLzcP\n(\nhttps://x.com/_akhaliq/status/1907502083231670300?t=PMssa6qf1T1s5_5Yqh9h3A&s=03\n)\n",
-    "date": "3/4/2025, 17:24:50",
-    "read": true,
-    "folder": "inbox"
-  },
-  {
-    "id": "<20250401115033.e11a1e3d210aaf06@mail.manus.im>",
-    "subject": "Your Manus invitation codes are ready!",
-    "sender": "\"Manus Team\" <noreply@mail.manus.im>",
-    "preview": "[https://d2jp9jrquxfve7.cloudfront.net/email/manus...",
-    "body": "[https://d2jp9jrquxfve7.cloudfront.net/email/manus.png]\n\nYou've received 2 invitation codes!\n\nThank you for supporting Manus! We've prepared 2 exclusive invitation codes for\nyou to share with your friends. Invite them to experience Manus today!\n\nView my invitation codes\n[https://email.mail.manus.im/c/eJw8zk1qwzAQxfHTSDub-ZAUbbQoFEOhlxhHcjMQW8ae5PylhWT9eD_-taQEENm3gpfAETIx-1vJC0mbOaR0iTNSzYlqXSBHyHnGFL0WAooQABEjMI8NUbBxJQSRBZILsIrex1W2xznq6u_lZrafjj8cTY6m1-Bokn13PPW9bV_bU01M-_atpzn-RH-UP8f6KIeJugA__-61r97K42zHoO_TcO21Da8y_yz0GwAA__-hTkNs]\n\n© 2025 Manus AI\n\n[https://email.mail.manus.im/o/eJw0zTuugzAQQNHV4A5rPv68V3gxAx6SkWIsgWH9USKlvLrFqSUlgMhOC-bAEf6I2T0LbQK8sGoW2pagVBdOoDknTPJf2VkhoAgBEDECs1dEQeVKCCIbpClAE3v5Jvt1emvuKJ8e3csxxKYAj-9fe3OjXKces-23DRnW93ntVeef4O5C7wAAAP__UvoxYg]",
-    "date": "1/4/2025, 13:50:33",
-    "read": true,
-    "folder": "inbox"
-  },
-  {
-    "id": "<20250402222147.fffe49abaed09f78@cioeu109333.lovable.dev>",
-    "subject": "Lovable Pulse — Build competition winners and Lovable Livesteam",
-    "sender": "\"Lovable\" <hi@lovable.dev>",
-    "preview": "***********************************************\nLo...",
-    "body": "***********************************************\nLovable Pulse —\nBuild competition winners and Lovable Livesteam\n***********************************************\n\nHey 👋\n\nHere are some community news from Lovable:\n\n--------------------------------------------\nLovable Livestream - Building a landing page\n--------------------------------------------\n\nLovable Livestream - Building a $10k landing page\n\nUs and Harry will build a high-converting, fully polished landing page live — complete with pro-level design, copy, interactions, and more.\n\nRegister here: https://lu.ma/j1if8m4m\n\n​See you there!\n\n-----------------------------------------------------------\nAnnouncing the build competition winners – $40k in prizes\n-----------------------------------------------------------\n\nAnnouncing the build competition winners – $40k in prizes\n\nWe organized a build competition with Anthropic, Supabase, Sentry, Elevenlabs and EQT Ventures.\n\nThese were the winning submissions:\n\n* Overall Winner - $10,000 cash\nStardust Analytics ( https://stardust-insights.lovable.app/ ) by Rasmus Sanne, Matt Bergström and Marcus Pousette\n* Best Startup - $5,000 cash\nSkillStep ( https://skillstep.lovable.app/ ) by Dilnoza Shaumarova and Christophe Debauve\n* Best Something 2.0 - $5,000 cash\nV.P.R.O.M.I.S.E. All-in-One Watch Party Learning ( https://vpromise.lovable.app/ ) by Ngoc Anh Nhu\n* Best Website - $5,000 cash\nDream Catcher ( https://slumber-tale.lovable.app/ ) by Abb Kapoor and Ian Cross\n* People’s Choice Award - $5,000 cash\nAccessAI ( https://voice-embeddable-widget.lovable.app/ ) by Skyler Talley\n\nWe were blown away by the apps people were able to build in just 24h!\n\nThat's all for this time.\n\nBest,\n\nThe Lovable Team\n\nLovable Logo\n\nTurn ideas into Lovable products at Lovable.dev\n\nStart building ( https://lovable.dev/dashboard )\n\n𝕏 Twitter ( https://x.com/lovable_dev )\n\nLinkedIn ( https://www.linkedin.com/company/lovable-dev )\n\nYouTube ( https://www.youtube.com/@lovable-labs )\n\nDiscord ( https://discord.gg/cSGYDCAx )\n\nUnsubscribe ( http://track.customer.io/unsubscribe/dgTmjgoDAMmMoAPIjKADAZX4eYXKkaKleJzQml3Kiw== )",
-    "date": "3/4/2025, 00:21:47",
-    "read": true,
-    "folder": "inbox"
-  },
-  {
-    "id": "<CALScJqZ4KtS4PNt4_PHaqsh=2vMw4KBCbtpWJyQcUXYeUQwzjQ@mail.gmail.com>",
-    "subject": "Scrnsht",
-    "sender": "\"Ronnie Spoelstra\" <ronnspoelstra@gmail.com>",
-    "preview": "A JavaScript error occurred in the main process\n\nU...",
-    "body": "A JavaScript error occurred in the main process\n\nUncaught Exception:\n\nError [ERR_REQUIRE_ESM]: require() of ES Module\n\nC:\\Users\\r0nw4\\ARTlab\\ART\\interface\\main.js from\n\ns\\r0nw4\\ARTlab\\ART\\node_modules\\electron\\dist\\resources\\default_app.asar\\main.js\nnot supported.\n\nC:\\Users\\r0nw4\\ARTlab\\ART\\interface\\main.js is treated as an ES module file\nas it is a .js file whose nearest parent package.json contains \"type\":\n\"module\" which declares all.js files in that package scope as ES modules.\n\nInstead rename C:\\Users\\r0nw4\\ARTlab\\ART\\interface\\main.js to end in .cjs,\nchange the requiring code to use dynamic import() which is available in all\nCommonJS modules, or change \"type\": \"module\" to \"type\": \"commonjs\" in\nC:\\Users\\r0nw4\\ARTlab\\ART\\package.json to treat all .js files as CommonJS\n(using.mjs for all ES modules instead).\n\nat f._load (node:electron/js2c/asar_bundle:2:13330)\n\nat loadApplicationPackage\n\n(C:\\Users\\r0nw4\\ARTlab\\ART\\node_modules\\electron\\dist\\resources\\default_app.asar\\...:16)\n\nat Object.<anonymous>\n\n(C:\\Users\\r0nw4\\ARTlab\\ART\\node_modules\\electron\\dist\\resources\\default_app.asar\\m...:9)\n\nat f._load (node:electron/js2c/asar_bundle:2:13330)\n\nat node:electron/js2c/browser_init:2:115640\n\nat node:electron/js2c/browser_init:2:115843\n\nat node:electron/js2c/browser_init:2:115847\n\nat f. load (node electron/js2c/asar_bundle:2:13330)\n",
-    "date": "4/4/2025, 11:19:22",
-    "read": true,
-    "folder": "inbox"
-  },
-  {
-    "id": "<20250403180219.c02c13706d9f8dd7@cioeu109333.lovable.dev>",
-    "subject": "Reminder: The right prompts get you 10x better results in Lovable",
-    "sender": "\"Lovable\" <hi@lovable.dev>",
-    "preview": "Hey there,\nEver wondered why experienced users mak...",
-    "body": "Hey there,\nEver wondered why experienced users make Lovable look so easy? How they prompt makes (almost) all the difference.\n\nHere's how to get 10x better results from Lovable:\n* Give Lovable context on the problem you are trying to solve\n* Break your asks down into smaller parts\n* Be specific about what you want to change, and what you want to change it to\n* Include images in your prompts to guide Lovable more precisely\nReady to try these techniques in Lovable? ( https://lovable.dev/ )\n\nTo dive deeper, check out this video we created with our friend\nMark on how to prompt Lovable correctly:\n\n( https://www.youtube.com/watch?v=IqWfKj4mUIo&utm_source=marketinglifecycle&utm_medium=email1nontech&utm_campaign=creativeabtest )\n\nCheers, Anton\n\nEmail footer image\n\nTurn ideas into lovable products at Lovable.dev ( https://lovable.dev )\n\nUnsubscribe ( http://track.customer.io/unsubscribe/dgTmjgoAAMmMoAPIjKADAZX80XEAaANuFzeuLmVzLA== )",
-    "date": "3/4/2025, 20:02:19",
-    "read": true,
-    "folder": "inbox"
-  },
-  {
-    "id": "<115d1888-d755-4c05-b336-c3b82d0d2638@smtp-relay.sendinblue.com>",
-    "subject": "Welcome to Argil - make sure to join our community",
-    "sender": "\"Laodis at Argil\" <support@argil.ai>",
-    "preview": "Hey there,\n\n \n\nThanks for joining Argil, we're exc...",
-    "body": "Hey there,\n\n \n\nThanks for joining Argil, we're excited for you to use video at scale 😍\n\nHere's all the [doc you need to get started.](https://docs.argil.ai/resources/introduction)\n\n \n\nThe next steps for you are:\n\n\n- [Train your avatar](https://docs.argil.ai/resources/training-tips) if you feel like it (here's how to do it) \n- Or generate your first video with one of our [educational & UGC avatars](https://app.argil.ai/avatars)  \n \n\nFinally, make sure to join our [discord channel for feedback](https://discord.gg/m8yBkuZt6Y) & community. \n\n\nCheers,\n\n \n\nLaodis, \nCEO\n\n",
-    "date": "4/4/2025, 15:27:53",
-    "read": true,
-    "folder": "inbox"
-  },
-  {
-    "id": "<0101019603400357-f205491e-9ab8-4425-8192-2fb222d3b169-000000@us-west-2.amazonses.com>",
-    "subject": "Your Cline Bot Inc. receipt [#1855-8874]",
-    "sender": "\"Cline Bot Inc.\" <receipts+acct_1QjsicJvJ1E14BGM@stripe.com>",
-    "preview": "Receipt from Cline Bot Inc. Receipt #1855-8874\nAmo...",
-    "body": "Receipt from Cline Bot Inc. Receipt #1855-8874\nAmount paid\n$5.60\n\nDate paid\nApr 4, 2025, 5:00:46 PM\n\nPayment method\nLink\n\nSummary\n\n-   - Payment to Cline Bot Inc. : $5.60\n\n- Amount paid : $5.60\n\n\nIf you have any questions, contact us at support@cline.bot (support@cline.bot).\nSomething wrong with the email? View in browser: (https://dashboard.stripe.com/receipts/payment/CAcQARoXChVhY2N0XzFRanNpY0p2SjFFMTRCR00or-XBvwYyBuch2KGJXDovFn-E9OecVPyFWG_UuSWXdxMtChSNUQT2p0F3MRmFRPoy0ffy0hhbqeDlY0F4-Sg)\n\nYou're receiving this email because you made a purchase at Cline Bot Inc., which partners with Stripe (https://stripe.com/) to provide invoicing and payment processing.",
-    "date": "5/4/2025, 02:00:48",
-    "read": true,
-    "folder": "inbox"
-  },
-  {
-    "id": "<0101019604cd1297-b32be6ae-3042-4ca4-9514-acf3b7d65536-000000@us-west-2.amazonses.com>",
-    "subject": "Your Cline Bot Inc. receipt [#1623-9502]",
-    "sender": "\"Cline Bot Inc.\" <receipts+acct_1QjsicJvJ1E14BGM@stripe.com>",
-    "preview": "Receipt from Cline Bot Inc. Receipt #1623-9502\nAmo...",
-    "body": "Receipt from Cline Bot Inc. Receipt #1623-9502\nAmount paid\n$10.85\n\nDate paid\nApr 5, 2025, 12:14:28 AM\n\nPayment method\nLink\n\nSummary\n\n-   - Payment to Cline Bot Inc. : $10.85\n\n- Amount paid : $10.85\n\n\nIf you have any questions, contact us at support@cline.bot (support@cline.bot).\nSomething wrong with the email? View in browser: (https://dashboard.stripe.com/receipts/payment/CAcQARoXChVhY2N0XzFRanNpY0p2SjFFMTRCR00o1bDDvwYyBrLP0_vUGzovFl6Vx2vtHnA9N2NWxuqQwv-TJw5sv59SZpUsUH-WS3luM4cvD7-ZFyuWl9aA2Dg)\n\nYou're receiving this email because you made a purchase at Cline Bot Inc., which partners with Stripe (https://stripe.com/) to provide invoicing and payment processing.",
-    "date": "5/4/2025, 09:14:30",
-    "read": true,
-    "folder": "inbox"
-  },
-  {
-    "id": "<010101960516982a-feaf4488-e24a-4ec4-8589-8b1e0cda3d3c-000000@us-west-2.amazonses.com>",
-    "subject": "Your Cline Bot Inc. receipt [#1407-8816]",
-    "sender": "\"Cline Bot Inc.\" <receipts+acct_1QjsicJvJ1E14BGM@stripe.com>",
-    "preview": "Receipt from Cline Bot Inc. Receipt #1407-8816\nAmo...",
-    "body": "Receipt from Cline Bot Inc. Receipt #1407-8816\nAmount paid\n$2.45\n\nDate paid\nApr 5, 2025, 1:34:44 AM\n\nPayment method\nLink\n\nSummary\n\n-   - Payment to Cline Bot Inc. : $2.45\n\n- Amount paid : $2.45\n\n\nIf you have any questions, contact us at support@cline.bot (support@cline.bot).\nSomething wrong with the email? View in browser: (https://dashboard.stripe.com/receipts/payment/CAcQARoXChVhY2N0XzFRanNpY0p2SjFFMTRCR00op9bDvwYyBsrOXRb8VjovFkmfpdR24fiJpG6065Z-5cBMdte13EgZ2Lgz8H1LoggjzOvBig1a3Nzm9MN3jI0)\n\nYou're receiving this email because you made a purchase at Cline Bot Inc., which partners with Stripe (https://stripe.com/) to provide invoicing and payment processing.",
-    "date": "5/4/2025, 10:34:49",
+    "id": "<iTTcELaF4ePs3Teft9aXQQ@notifications.google.com>",
+    "subject": "Google heeft je instellingen geüpdatet",
+    "sender": "\"Google\" <no-reply@accounts.google.com>",
+    "preview": "[image: Google]\nHallo ART, we hebben je instelling...",
+    "body": "[image: Google]\nHallo ART, we hebben je instellingen geüpdatet\n\n\nmailto.artai@gmail.com\nGoogle heeft wijzigingen aangebracht om een veiligere online omgeving te\nbieden aan mensen van wie niet is bevestigd dat ze 18 jaar of ouder zijn\nOntdek het zelf\n<https://accounts.google.com/AccountChooser?Email=mailto.artai@gmail.com&continue=https://myaccount.google.com/check-settings?cfc%3D1%26rfn%3D1743402221757>\n\n\nSafeSearch staat aan\nGoogle kan expliciete content (zoals pornografie) verbergen in je\nzoekresultaten\n\nGepersonaliseerde advertenties staan uit\nGoogle laat je geen gepersonaliseerde advertenties zien\n\nLocatiegeschiedenis staat uit\nDe exacte locatie van je apparaten wordt niet automatisch opgeslagen in je\nlocatiegeschiedenis\n\nBen je 18 jaar of ouder?\nBevestig je leeftijd\n<https://accounts.google.com/AccountChooser?Email=mailto.artai@gmail.com&continue=https://myaccount.google.com/age-verification?acl%3D2%26p%3D7%26rfn%3D1743402221757>\nen kies de instellingen die geschikt zijn voor jou\nJe krijgt deze e-mail om je te informeren over belangrijke wijzigingen in\nje Google-account en -services.\n© 2025 Google Ireland Ltd., Gordon House, Barrow Street, Dublin 4, Ireland\n",
+    "date": "31/3/2025, 08:23:41",
     "read": true,
     "folder": "inbox"
   },

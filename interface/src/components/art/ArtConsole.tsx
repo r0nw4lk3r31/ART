@@ -1,3 +1,4 @@
+// ArtConsole.tsx
 import React, { useState, useEffect } from 'react';
 import { Calendar, Command, Divide, Globe, Layers, LayoutGrid, MailOpen, Maximize, MessageSquare, Search, Settings, Sun, Watch, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,19 +7,20 @@ import { LayoutMode, ModuleState, ModuleType } from '@/types/artTypes';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
+interface ApiStatus {
+  name: string;
+  isValid: boolean;
+}
+
 interface ArtConsoleProps {
   layoutMode: LayoutMode;
   setLayoutMode: (mode: LayoutMode) => void;
   targetFrame: string;
   modules: ModuleState;
   onChangeModule: (frameId: string, moduleType: ModuleType) => void;
-  command: string;
-  setCommand: (command: string) => void;
-  selectedApi: string;
-  setSelectedApi: (api: string) => void;
-  onCommandSubmit: (command: string) => void;
-  nanoGptModel: string;
-  setNanoGptModel: (model: string) => void;
+  frameApis: Record<string, string>;
+  setFrameApi: (frameId: string, api: string) => void;
+  chatRefs: React.MutableRefObject<Record<string, { processCommand?: (cmd: string) => Promise<string | null>; addMessage?: (msg: string) => void }>>;
   setTargetFrame: (frameId: string) => void;
 }
 
@@ -28,21 +30,26 @@ const ArtConsole = ({
   targetFrame,
   modules,
   onChangeModule,
-  command,
-  setCommand,
-  selectedApi,
-  setSelectedApi,
-  onCommandSubmit,
-  nanoGptModel,
-  setNanoGptModel,
-  setTargetFrame
+  frameApis,
+  setFrameApi,
+  chatRefs,
+  setTargetFrame,
 }: ArtConsoleProps) => {
   const [currentTime, setCurrentTime] = useState<string>('');
   const [currentDate, setCurrentDate] = useState<string>('');
   const [weather, setWeather] = useState<{ temp: string; condition: string }>({ temp: 'Loading...', condition: '' });
   const [selectedModule, setSelectedModule] = useState<ModuleType>('chat');
-  const [nanoGptModels, setNanoGptModels] = useState<{ id: string; object: string; created: number; owned_by: string }[]>([]);
-  const [nanoGptBalance, setNanoGptBalance] = useState<{ balance: string; receivable: string; earned: string } | null>(null);
+  
+  // Sync selectedModule with the active module in the targeted frame
+  useEffect(() => {
+    if (targetFrame && modules[targetFrame]) {
+      setSelectedModule(modules[targetFrame].type);
+    }
+  }, [targetFrame, modules]);
+  const [command, setCommand] = useState<string>('');
+  const [apiStatus, setApiStatus] = useState<ApiStatus[]>([]);
+  const [nanoGptModels, setNanoGptModels] = useState<{ id: string; object: string; created: number; owned_by: string }[]>([]); // Restored
+  const [nanoGptBalance, setNanoGptBalance] = useState<{ balance: string; receivable: string; earned: string } | null>(null); // Restored
 
   // Fetch NanoGPT models
   useEffect(() => {
@@ -59,9 +66,6 @@ const ArtConsole = ({
         if (!response.ok) throw new Error(`NanoGPT models fetch failed: ${response.status}`);
         const data = await response.json();
         setNanoGptModels(data.data || []);
-        if (data.data && data.data.length > 0 && !nanoGptModel) {
-          setNanoGptModel(data.data[0].id);
-        }
       } catch (error) {
         console.error('Error fetching NanoGPT models:', error);
         setNanoGptModels([]);
@@ -69,30 +73,6 @@ const ArtConsole = ({
     };
     fetchNanoGptModels();
   }, []);
-
-  // Fetch NanoGPT balance
-  const fetchNanoGptBalance = async () => {
-    const apiKey = import.meta.env.VITE_NANOGPT_API_KEY;
-    try {
-      const response = await fetch('https://nano-gpt.com/api/check-nano-balance', {
-        method: 'POST',
-        headers: {
-          'x-api-key': apiKey,
-          'Content-Type': 'application/json',
-        },
-      });
-      if (!response.ok) throw new Error(`NanoGPT balance fetch failed: ${response.status}`);
-      const data = await response.json();
-      setNanoGptBalance({
-        balance: data.balance,
-        receivable: data.receivable,
-        earned: data.earned
-      });
-    } catch (error) {
-      console.error('Error fetching NanoGPT balance:', error);
-      setNanoGptBalance(null);
-    }
-  };
 
   // Update time and date
   useEffect(() => {
@@ -106,7 +86,7 @@ const ArtConsole = ({
     return () => clearInterval(interval);
   }, []);
 
-  // Update weather
+  // Update weather and API status on mount
   useEffect(() => {
     const fetchWeather = async () => {
       const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
@@ -125,15 +105,64 @@ const ArtConsole = ({
       }
     };
     fetchWeather();
-    const interval = setInterval(fetchWeather, 600000);
+    checkApiStatus();
+    const interval = setInterval(() => {
+      fetchWeather();
+      checkApiStatus();
+    }, 600000);
     return () => clearInterval(interval);
   }, []);
 
-  const handleCommandSubmitLocal = (e: React.FormEvent) => {
+  // Check API health status
+  const checkApiStatus = async () => {
+    const status: ApiStatus[] = [];
+    const grokKey = import.meta.env.VITE_XAI_API_KEY;
+    const nanoGptKey = import.meta.env.VITE_NANOGPT_API_KEY;
+
+    if (grokKey) {
+      try {
+        const response = await fetch('https://api.x.ai/v1/models', {
+          method: 'GET',
+          headers: { Authorization: `Bearer ${grokKey}`, 'Content-Type': 'application/json' },
+        });
+        status.push({ name: 'Grok', isValid: response.ok });
+      } catch {
+        status.push({ name: 'Grok', isValid: false });
+      }
+    } else {
+      status.push({ name: 'Grok', isValid: false });
+    }
+
+    if (nanoGptKey) {
+      try {
+        const response = await fetch('https://nano-gpt.com/api/v1/models', {
+          method: 'GET',
+          headers: { Authorization: `Bearer ${nanoGptKey}`, 'Content-Type': 'application/json' },
+        });
+        status.push({ name: 'NanoGPT', isValid: response.ok });
+      } catch {
+        status.push({ name: 'NanoGPT', isValid: false });
+      }
+    } else {
+      status.push({ name: 'NanoGPT', isValid: false });
+    }
+
+    setApiStatus(status);
+  };
+
+  const handleCommandSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (command.trim()) {
-      onCommandSubmit(command);
-      setCommand(''); // Clear the command input after submission
+    if (!command.trim() || !targetFrame || !chatRefs.current[targetFrame]?.processCommand) return;
+
+    const cmd = command.trim();
+    setCommand('');
+    
+    // Just call processCommand and let it handle messages internally
+    try {
+      await chatRefs.current[targetFrame].processCommand(cmd);
+      console.log(`Command processed by ${targetFrame}`);
+    } catch (error) {
+      console.error(`Error processing command in ${targetFrame}:`, error);
     }
   };
 
@@ -151,6 +180,36 @@ const ArtConsole = ({
     setLayoutMode(modes[nextIndex]);
   };
 
+  const getFrameIds = () => {
+    if (layoutMode === 'fullscreen') return ['frame1'];
+    if (layoutMode === 'split') return ['frame1', 'frame2'];
+    return ['frame1', 'frame2', 'frame3', 'frame4'];
+  };
+
+  // Restored NanoGPT balance fetch
+  const fetchNanoGptBalance = async () => {
+    const apiKey = import.meta.env.VITE_NANOGPT_API_KEY;
+    try {
+      const response = await fetch('https://nano-gpt.com/api/check-nano-balance', {
+        method: 'POST',
+        headers: {
+          'x-api-key': apiKey,
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) throw new Error(`NanoGPT balance fetch failed: ${response.status}`);
+      const data = await response.json();
+      setNanoGptBalance({
+        balance: data.balance,
+        receivable: data.receivable,
+        earned: data.earned,
+      });
+    } catch (error) {
+      console.error('Error fetching NanoGPT balance:', error);
+      setNanoGptBalance(null);
+    }
+  };
+
   return (
     <div className="flex flex-col bg-console p-3 border-t border-console-border">
       <div className="flex items-center justify-between mb-2">
@@ -166,9 +225,9 @@ const ArtConsole = ({
           )}
         </div>
         <div className="flex space-x-2">
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             className="h-7 w-7 rounded-md bg-console-muted hover:bg-console-muted"
             onClick={toggleLayoutMode}
           >
@@ -182,27 +241,52 @@ const ArtConsole = ({
                 <Settings size={14} />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-64 bg-console-muted border-console-border">
+            <PopoverContent className="w-80 bg-console-muted border-console-border">
               <div className="space-y-4 p-2">
                 <div>
-                  <label className="text-sm text-console-fg mb-1 block">API Source</label>
-                  <Select value={selectedApi} onValueChange={setSelectedApi}>
-                    <SelectTrigger className="w-full bg-console-bg border-console-border">
-                      <SelectValue placeholder="Select API" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Offline">Offline (default)</SelectItem>
-                      <SelectItem value="Grok">Grok</SelectItem>
-                      <SelectItem value="NanoGPT">NanoGPT</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <label className="text-sm text-console-fg mb-1 block">API Settings</label>
+                  {getFrameIds().map(frameId => (
+                    <div key={frameId} className="flex items-center space-x-2 mb-2">
+                      <span className="text-xs text-console-fg w-16">Frame {frameId.slice(-1)}</span>
+                      <Select value={frameApis?.[frameId] || "Offline"} onValueChange={api => setFrameApi(frameId, api)}>
+                        <SelectTrigger className="w-32 bg-console-bg border-console-border h-8">
+                          <SelectValue placeholder="Select API" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Offline">Offline</SelectItem>
+                          <SelectItem value="Grok">Grok</SelectItem>
+                          <SelectItem value="NanoGPT">NanoGPT</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <span
+                        className={`h-2 w-2 rounded-full ${
+                          !frameApis || frameApis[frameId] === 'Offline'
+                            ? 'bg-gray-500'
+                            : apiStatus.find(s => s.name === frameApis[frameId])?.isValid
+                            ? 'bg-green-500'
+                            : 'bg-red-500'
+                        }`}
+                      />
+                    </div>
+                  ))}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-2 w-full bg-console-bg border-console-border"
+                    onClick={checkApiStatus}
+                  >
+                    Refresh API Status
+                  </Button>
                 </div>
-                {selectedApi === 'NanoGPT' && (
+                {Object.values(frameApis).includes('NanoGPT') && (
                   <>
                     <div>
                       <label className="text-sm text-console-fg mb-1 block">NanoGPT Model</label>
-                      <Select value={nanoGptModel} onValueChange={setNanoGptModel}>
-                        <SelectTrigger className="w-full bg-console-bg border-console-border">
+                      <Select
+                        value={nanoGptModels.length > 0 ? nanoGptModels[0].id : undefined} // Default to first model
+                        onValueChange={(value) => console.log('Selected NanoGPT model:', value)} // Replace with setter if needed
+                      >
+                        <SelectTrigger className="w-full bg-console-bg border-console-border h-8">
                           <SelectValue placeholder="Select Model" />
                         </SelectTrigger>
                         <SelectContent>
@@ -245,12 +329,12 @@ const ArtConsole = ({
         </div>
       </div>
       <div className="flex items-center space-x-4">
-        <form onSubmit={handleCommandSubmitLocal} className="flex-1">
+        <form onSubmit={handleCommandSubmit} className="flex-1">
           <div className="relative">
             <Input
               type="text"
               value={command}
-              onChange={(e) => setCommand(e.target.value)}
+              onChange={e => setCommand(e.target.value)}
               className="w-full bg-console-muted border-console-border text-sm pl-8"
               placeholder={`Enter a command for ${targetFrame ? modules[targetFrame].type : 'ART'}...`}
             />
@@ -275,7 +359,7 @@ const ArtConsole = ({
             <SelectItem value="blockchain">Blockchain</SelectItem>
             <SelectItem value="scanner">Scanner</SelectItem>
             <SelectItem value="coding">Coding</SelectItem>
-            <SelectItem value="executor-chat">Executor Chat</SelectItem> {/* Added executor-chat */}
+            <SelectItem value="executor-chat">Executor Chat</SelectItem>
           </SelectContent>
         </Select>
         <Select value={targetFrame} onValueChange={setTargetFrame}>

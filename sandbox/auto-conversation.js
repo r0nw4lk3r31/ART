@@ -1,3 +1,28 @@
+interface Config {
+  autoConversationEnabled: boolean;
+  maxExchanges: number;
+  exchangeDelay: number;
+  currentExchanges: number;
+  conversationHistory: { timestamp: string; sourceFrame: string; targetFrame: string; message: string }[];
+  frameRoles: Record<string, string>;
+}
+
+declare global {
+  interface Window {
+    config: Config;
+    electron?: {
+      ipcRenderer: {
+        on: (channel: string, listener: (msg: any) => void) => void;
+        send: (channel: string, data: any) => void;
+        removeAllListeners: (channel: string) => void;
+      };
+    };
+    startAutoConversation: (initialPrompt: string, sourceFrame: string, targetFrame: string) => string;
+    stopAutoConversation: () => string;
+    sendMessage: (sourceFrame: string, targetFrame: string, message: string) => boolean;
+  }
+}
+
 // Auto-Conversation Module for ART Interface
 // This script enables automatic back-and-forth conversation between LLM frames
 
@@ -28,32 +53,13 @@ window.config = {
 };
 
 // Detect the current frame
-function detectCurrentFrame() {
-  // Try to find frame ID in the DOM
-  const frameElement = document.querySelector('[data-frame-id]');
-  if (frameElement && frameElement.dataset.frameId) {
-    return frameElement.dataset.frameId;
-  }
-  
-  // If not found, try to infer from the URL
-  const url = window.location.href;
-  if (url.includes('frame=1') || url.includes('frame1')) {
-    return 'frame1';
-  } else if (url.includes('frame=2') || url.includes('frame2')) {
-    return 'frame2';
-  } else if (url.includes('frame=3') || url.includes('frame3')) {
-    return 'frame3';
-  } else if (url.includes('frame=4') || url.includes('frame4')) {
-    return 'frame4';
-  }
-  
-  // Default to frame1 if we can't detect
-  console.warn("Could not detect frame ID, defaulting to frame1");
-  return 'frame1';
-}
+const detectCurrentFrame = (): string => {
+  const frameElement = document.querySelector("[data-frame-id]") as HTMLElement;
+  return frameElement?.dataset.frameId || "frame1";
+};
 
 // Start automatic conversation between frames
-function startAutoConversation(initialPrompt, sourceFrame, targetFrame) {
+function startAutoConversation(initialPrompt: string, sourceFrame: string, targetFrame: string): string {
   if (!initialPrompt || !sourceFrame || !targetFrame) {
     console.error("Missing required parameters for auto conversation");
     return "Error: Missing parameters. Need initialPrompt, sourceFrame, and targetFrame.";
@@ -84,7 +90,7 @@ function startAutoConversation(initialPrompt, sourceFrame, targetFrame) {
 }
 
 // Stop the automatic conversation
-function stopAutoConversation() {
+function stopAutoConversation(): string {
   window.config.autoConversationEnabled = false;
   
   // Show notification
@@ -95,7 +101,7 @@ function stopAutoConversation() {
 }
 
 // Send a message from one frame to another
-function sendMessage(sourceFrame, targetFrame, message) {
+const sendMessage = (sourceFrame: string, targetFrame: string, message: string): boolean => {
   if (!window.electron?.ipcRenderer) {
     console.error("Electron IPC not available");
     showNotification("Error: Electron IPC not available", 'error');
@@ -129,10 +135,10 @@ function sendMessage(sourceFrame, targetFrame, message) {
     showNotification(`Error sending message: ${error.message}`, 'error');
     return false;
   }
-}
+};
 
 // Extract code blocks from a message and convert to executor instructions
-function extractCodeInstructions(message) {
+function extractCodeInstructions(message: string) {
   const instructions = [];
   const codeBlockRegex = /```([a-z]*)\n([\s\S]*?)```/g;
   let match;
@@ -170,7 +176,7 @@ function extractCodeInstructions(message) {
 }
 
 // Get file extension based on language
-function getFileExtension(language) {
+function getFileExtension(language: string) {
   const extensionMap = {
     'javascript': '.js',
     'js': '.js',
@@ -189,7 +195,7 @@ function getFileExtension(language) {
 }
 
 // Log conversation to history
-function logToHistory(sourceFrame, targetFrame, message) {
+function logToHistory(sourceFrame: string, targetFrame: string, message: string) {
   const entry = {
     timestamp: new Date().toISOString(),
     sourceFrame,
@@ -222,7 +228,7 @@ function logToHistory(sourceFrame, targetFrame, message) {
 }
 
 // Show a notification
-function showNotification(message, type = 'success') {
+function showNotification(message: string, type = 'success') {
   const colors = {
     success: 'rgba(0, 128, 0, 0.8)',
     error: 'rgba(220, 53, 69, 0.8)',
@@ -259,7 +265,7 @@ function showNotification(message, type = 'success') {
 }
 
 // Set up a listener for the current frame
-function setupAutoResponder() {
+const setupAutoResponder = () => {
   const currentFrame = detectCurrentFrame();
   
   if (!window.electron?.ipcRenderer) {
@@ -269,7 +275,7 @@ function setupAutoResponder() {
   
   try {
     // Set up the listener
-    window.electron.ipcRenderer.on(`frame-${currentFrame}`, (msg) => {
+    window.electron.ipcRenderer.on(`frame-${currentFrame}`, (msg: { sender: string; message: string }) => {
       console.log(`Received message in ${currentFrame}:`, msg);
       
       // If auto conversation is enabled and we haven't reached the max exchanges
@@ -287,8 +293,8 @@ function setupAutoResponder() {
         // Wait a bit before responding to make it feel more natural
         setTimeout(() => {
           // Find the chat input and submit button
-          const chatInput = document.querySelector('input[placeholder*="message"], textarea[placeholder*="message"]');
-          const submitButton = chatInput?.closest('form')?.querySelector('button[type="submit"]');
+          const chatInput = document.querySelector('input[placeholder*="message"], textarea[placeholder*="message"]') as HTMLInputElement;
+          const submitButton = chatInput?.closest('form')?.querySelector('button[type="submit"]') as HTMLButtonElement;
           
           if (chatInput && submitButton) {
             // Set the input value
@@ -307,7 +313,7 @@ function setupAutoResponder() {
             // After a delay, send the response back
             setTimeout(() => {
               // Find the last assistant message
-              const messages = document.querySelectorAll('[class*="message"], [class*="Message"]');
+              const messages = document.querySelectorAll('[class*="message"], [class*="Message"]') as NodeListOf<HTMLElement>;
               let lastAssistantMessage = null;
               
               for (let i = messages.length - 1; i >= 0; i--) {
@@ -337,7 +343,7 @@ function setupAutoResponder() {
     console.error("Error setting up auto responder:", error);
     return false;
   }
-}
+};
 
 // Create a simple UI for testing
 function createAutoConversationUI() {

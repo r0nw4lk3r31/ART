@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, MapPin, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, Clock, MapPin, Plus, ChevronLeft, ChevronRight, CheckSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import BaseModule from './BaseModule';
@@ -13,6 +13,16 @@ interface Event {
   startTime: string;
   endTime: string;
   location: string;
+  isTodo?: boolean;
+}
+
+interface Todo {
+  id: string;
+  text: string;
+  completed: boolean;
+  priority: 'high' | 'medium' | 'low';
+  dueDate?: string;
+  dueDateFormatted?: string;
 }
 
 interface AgendaModuleProps {
@@ -31,6 +41,7 @@ const AgendaModule = ({ frameId, isTargeted }: AgendaModuleProps) => {
   const [location, setLocation] = useState('');
   const [isAdding, setIsAdding] = useState(false);
 
+  // Load events from electronAPI and todos from localStorage
   useEffect(() => {
     const testIPC = async () => {
       try {
@@ -45,12 +56,111 @@ const AgendaModule = ({ frameId, isTargeted }: AgendaModuleProps) => {
     const loadEvents = async () => {
       try {
         const loadedEvents = await window.electronAPI.loadAgenda();
-        setEvents(loadedEvents.map((e: any) => ({ ...e, date: new Date(e.date) })));
+        setEvents(loadedEvents.map((e: Event & { date: string }) => ({ 
+          ...e, 
+          date: new Date(e.date) 
+        })));
       } catch (error) {
         toast.error('Failed to load agenda: ' + error.message);
       }
     };
     loadEvents();
+    
+    // Load todos with deadlines from localStorage
+    const loadTodos = () => {
+      try {
+        const savedTodos = localStorage.getItem('todos');
+        if (savedTodos) {
+          const parsedTodos = JSON.parse(savedTodos);
+          console.log('Loading todos for agenda:', parsedTodos.length, 'todos found');
+          
+          // Filter todos with due dates and convert them to event-like objects
+          const todoEvents = parsedTodos
+            .filter((todo: Todo) => todo.dueDate && !todo.completed)
+            .map((todo: Todo) => {
+              console.log('Adding todo to agenda:', todo.text, 'due:', todo.dueDate);
+              return {
+                // Use a more unique ID to prevent duplicates
+                id: `todo-${todo.id}`,
+                title: todo.text,
+                date: new Date(todo.dueDate),
+                startTime: '',
+                endTime: '',
+                location: `Todo - ${todo.priority} priority`,
+                isTodo: true
+              };
+            });
+          
+          console.log('Created', todoEvents.length, 'todo events for agenda');
+          
+          // Add todo events to the events array
+          setEvents(prev => {
+            // Filter out any existing todo events to prevent duplicates
+            const nonTodoEvents = prev.filter(event => !event.id.toString().startsWith('todo-'));
+            return [...nonTodoEvents, ...todoEvents];
+          });
+        }
+      } catch (error) {
+        console.error('Error loading todos for agenda:', error);
+      }
+    };
+    loadTodos();
+  }, []);
+  
+  // Listen for changes to todos in localStorage
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'todos') {
+        // Reload events and todos when todos change
+        const loadEvents = async () => {
+          try {
+            const loadedEvents = await window.electronAPI.loadAgenda();
+            // Filter out todo events (they'll be re-added)
+            const regularEvents = loadedEvents
+              .map((e: Event & { date: string }) => ({ ...e, date: new Date(e.date) }))
+              .filter((e: Event) => !e.id.toString().startsWith('todo-'));
+            
+            setEvents(regularEvents);
+            
+            // Add todo events
+            if (e.newValue) {
+              const parsedTodos = JSON.parse(e.newValue);
+              console.log('Storage event: Loading todos for agenda:', parsedTodos.length, 'todos found');
+              
+              const todoEvents = parsedTodos
+                .filter((todo: Todo) => todo.dueDate && !todo.completed)
+                .map((todo: Todo) => {
+                  console.log('Storage event: Adding todo to agenda:', todo.text, 'due:', todo.dueDate);
+                  return {
+                    // Use consistent ID format (without timestamp)
+                    id: `todo-${todo.id}`,
+                    title: todo.text,
+                    date: new Date(todo.dueDate),
+                    startTime: '',
+                    endTime: '',
+                    location: `Todo - ${todo.priority} priority`,
+                    isTodo: true
+                  };
+                });
+              
+              console.log('Storage event: Created', todoEvents.length, 'todo events for agenda');
+              
+              setEvents(prev => {
+                // Filter out any existing todo events to prevent duplicates
+                const nonTodoEvents = prev.filter(event => !event.id.toString().startsWith('todo-'));
+                return [...nonTodoEvents, ...todoEvents];
+              });
+            }
+          } catch (error) {
+            console.error('Error reloading events after todo change:', error);
+          }
+        };
+        loadEvents();
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -138,21 +248,57 @@ const AgendaModule = ({ frameId, isTargeted }: AgendaModuleProps) => {
             <div className="flex-1 overflow-y-auto">
               <h4 className="font-medium mb-2">Events for {currentDate.toLocaleDateString()}</h4>
               {todaysEvents.map((event) => (
-                <Card key={event.id} className="p-3 mb-2">
-                  <div className="font-medium text-sm">{event.title}</div>
-                  <div className="text-xs text-muted-foreground">
-                    <Clock className="h-3 w-3 mr-1 inline" /> {event.startTime} - {event.endTime}
+                <Card 
+                  key={event.id} 
+                  className={`p-3 mb-2 ${event.isTodo ? 'border-l-4 border-l-primary' : ''}`}
+                >
+                  <div className="font-medium text-sm">
+                    {event.isTodo && <CheckSquare className="h-3 w-3 mr-1 inline text-primary" />}
+                    {event.title}
                   </div>
-                  <div className="text-xs text-muted-foreground">
-                    <MapPin className="h-3 w-3 mr-1 inline" /> {event.location}
-                  </div>
+                  {!event.isTodo ? (
+                    <>
+                      <div className="text-xs text-muted-foreground">
+                        <Clock className="h-3 w-3 mr-1 inline" /> {event.startTime} - {event.endTime}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        <MapPin className="h-3 w-3 mr-1 inline" /> {event.location}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-xs text-muted-foreground">
+                      <Calendar className="h-3 w-3 mr-1 inline" /> Due today
+                      <span className="mx-2">•</span>
+                      <span>{event.location}</span>
+                    </div>
+                  )}
                 </Card>
               ))}
               <h4 className="font-medium mb-2 mt-4">Upcoming</h4>
-              {upcomingEvents.slice(0, 3).map((event) => (
-                <Card key={event.id} className="p-3 mb-2">
-                  <div className="font-medium text-sm">{event.title}</div>
-                  <div className="text-xs text-muted-foreground">{event.date.toLocaleDateString()} • {event.startTime}</div>
+              {upcomingEvents.slice(0, 5).map((event) => (
+                <Card 
+                  key={event.id} 
+                  className={`p-3 mb-2 ${event.isTodo ? 'border-l-4 border-l-primary' : ''}`}
+                >
+                  <div className="font-medium text-sm">
+                    {event.isTodo && <CheckSquare className="h-3 w-3 mr-1 inline text-primary" />}
+                    {event.title}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    <Calendar className="h-3 w-3 mr-1 inline" /> {event.date.toLocaleDateString()}
+                    {!event.isTodo && event.startTime && (
+                      <>
+                        <span className="mx-2">•</span>
+                        <Clock className="h-3 w-3 mr-1 inline" /> {event.startTime}
+                      </>
+                    )}
+                    {event.isTodo && (
+                      <>
+                        <span className="mx-2">•</span>
+                        <span>{event.location}</span>
+                      </>
+                    )}
+                  </div>
                 </Card>
               ))}
             </div>
